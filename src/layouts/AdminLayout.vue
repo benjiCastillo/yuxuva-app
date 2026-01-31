@@ -18,12 +18,13 @@
             <p class="text-lg font-semibold">Administración deportiva</p>
           </div>
         </div>
-        <RouterLink
-          to="/login"
+        <button
+          type="button"
           class="rounded-full border border-slate-300/80 bg-white/80 px-4 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100"
+          @click="handleLogout"
         >
           Cerrar sesión
-        </RouterLink>
+        </button>
       </header>
 
       <main class="mt-8 grid flex-1 gap-6 lg:grid-cols-[240px_1fr]">
@@ -71,7 +72,8 @@
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/auth.store'
 
 const navigation = [
   { label: 'Resumen', to: '/admin' },
@@ -80,4 +82,12 @@ const navigation = [
   { label: 'Pilotos', to: '/admin' },
   { label: 'Equipo técnico', to: '/admin' },
 ]
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const handleLogout = async () => {
+  await authStore.logout()
+  await router.push('/login')
+}
 </script>
