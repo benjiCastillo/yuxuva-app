@@ -1,18 +1,44 @@
-import AdminLayout from '../../layouts/AdminLayout.vue'
-import DashboardHome from '../../modules/admin/pages/DashboardHome.vue'
+import AdminLayout from '@/layouts/AdminLayout.vue'
+import DashboardPage from '@/modules/admin/pages/DashboardPage.vue'
+import ProfilePage from '@/modules/admin/pages/ProfilePage.vue'
+import UsersPage from '@/modules/admin/pages/UsersPage.vue'
 
 export const adminRoutes = [
   {
-    path: '/admin',
+    path: '/',
     component: AdminLayout,
     meta: {
       requiresAuth: true,
+      breadcrumb: 'Admin',
     },
     children: [
       {
         path: '',
+        redirect: '/dashboard',
+      },
+      {
+        path: 'dashboard',
         name: 'dashboard',
-        component: DashboardHome,
+        component: DashboardPage,
+        meta: {
+          breadcrumb: 'Dashboard',
+        },
+      },
+      {
+        path: 'users',
+        name: 'users',
+        component: UsersPage,
+        meta: {
+          breadcrumb: 'Users',
+        },
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: ProfilePage,
+        meta: {
+          breadcrumb: 'Perfil',
+        },
       },
     ],
   },

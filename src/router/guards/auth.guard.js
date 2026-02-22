@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/store/auth.store'
 
-const DEFAULT_AUTH_REDIRECT = '/admin'
+const DEFAULT_AUTH_REDIRECT = '/dashboard'
 const LOGIN_PATH = '/login'
 
 const isProtectedRoute = (to) => to.matched.some((record) => record.meta?.requiresAuth)

@@ -1,90 +1,113 @@
 <template>
-  <div class="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.06),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(56,189,248,0.12),_transparent_45%)] dark:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(15,23,42,0.65),_transparent_45%)]"></div>
-    <div class="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(120deg,rgba(15,23,42,0.08)_1px,transparent_1px),linear-gradient(rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:40px_40px] dark:opacity-20"></div>
+  <div class="min-h-screen bg-slate-100 text-slate-900">
+    <AppTopbar
+      :breadcrumbs="breadcrumbs"
+      :user-name="userDisplayName"
+      @toggle-sidebar="toggleSidebar"
+      @open-profile="handleOpenProfile"
+      @logout="handleLogout"
+    />
 
-    <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-8">
-      <header class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div
-            class="grid h-11 w-11 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-          >
-            RC
-          </div>
-          <div>
-            <p class="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
-              Rally Control
-            </p>
-            <p class="text-lg font-semibold">Administración deportiva</p>
-          </div>
-        </div>
+    <div class="relative flex min-h-[calc(100vh-4rem)]">
+      <AppSidebar
+        :is-open="isSidebarOpen"
+        :is-mobile="isMobile"
+        :items="menuItems"
+        @navigate="closeSidebar"
+      />
+
+      <Transition
+        enter-active-class="transition-opacity duration-300"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
         <button
+          v-if="isMobile && isSidebarOpen"
+          class="fixed inset-0 z-20 bg-slate-900/40 backdrop-blur-[1px] lg:hidden"
           type="button"
-          class="rounded-full border border-slate-300/80 bg-white/80 px-4 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100"
-          @click="handleLogout"
-        >
-          Cerrar sesión
-        </button>
-      </header>
+          aria-label="Close menu"
+          @click="closeSidebar"
+        />
+      </Transition>
 
-      <main class="mt-8 grid flex-1 gap-6 lg:grid-cols-[240px_1fr]">
-        <aside
-          class="flex flex-col gap-6 rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900/80"
-        >
-          <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-              Menú
-            </p>
-            <p class="mt-2 text-lg font-semibold text-slate-900">Centro de operaciones</p>
+      <main class="relative z-10 flex-1 p-4 transition-all duration-300 sm:p-6">
+        <div class="flex min-h-full flex-col gap-6">
+          <div class="flex-1">
+            <RouterView />
           </div>
-          <nav class="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-            <RouterLink
-              v-for="item in navigation"
-              :key="item.label"
-              :to="item.to"
-              class="flex items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              <span>{{ item.label }}</span>
-              <span class="text-xs text-slate-400">→</span>
-            </RouterLink>
-          </nav>
-          <div
-            class="mt-auto rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-100"
-          >
-            <p class="font-semibold">Equipo en pista</p>
-            <p class="mt-1 text-xs text-emerald-700 dark:text-emerald-200">
-              5 coordinadores conectados
-            </p>
-            <button
-              class="mt-3 w-full rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white dark:bg-emerald-400 dark:text-emerald-950"
-            >
-              Invitar oficial
-            </button>
-          </div>
-        </aside>
-
-        <section class="grid gap-6">
-          <RouterView />
-        </section>
+          <AppFooter v-if="showFooter" />
+        </div>
       </main>
     </div>
   </div>
 </template>
 
-<script setup>
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
+import AppFooter from '@/modules/admin/components/AppFooter.vue'
+import AppSidebar from '@/modules/admin/components/AppSidebar.vue'
+import AppTopbar from '@/modules/admin/components/AppTopbar.vue'
+import { createLayoutState, provideLayout, type AdminMenuItem } from '@/composables/useLayout'
 import { useAuthStore } from '@/store/auth.store'
 
-const navigation = [
-  { label: 'Resumen', to: '/admin' },
-  { label: 'Carreras', to: '/admin' },
-  { label: 'Circuitos', to: '/admin' },
-  { label: 'Pilotos', to: '/admin' },
-  { label: 'Equipo técnico', to: '/admin' },
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+const menuConfig: AdminMenuItem[] = [
+  { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', roles: ['admin', 'manager', 'viewer'] },
+  { label: 'Users', icon: 'pi pi-users', route: '/users', roles: ['admin', 'manager'] },
 ]
 
-const authStore = useAuthStore()
-const router = useRouter()
+const role = computed(() => {
+  const roleValue = authStore.user?.role
+  return typeof roleValue === 'string' ? roleValue.toLowerCase() : null
+})
+
+const userDisplayName = computed(() => {
+  return authStore.user?.name ?? authStore.user?.email ?? 'User'
+})
+
+const layoutState = createLayoutState(menuConfig, role)
+provideLayout(layoutState)
+
+const { isSidebarOpen, isMobile, menuItems, closeSidebar, toggleSidebar } = layoutState
+const showFooter = true
+
+watch(
+  () => route.path,
+  () => {
+    if (isMobile.value) {
+      closeSidebar()
+    }
+  },
+)
+
+const breadcrumbs = computed(() => {
+  const labels = route.matched
+    .map((record) => {
+      const raw = record.meta?.breadcrumb ?? record.name
+      if (!raw) {
+        return null
+      }
+      return String(raw)
+    })
+    .filter(Boolean) as string[]
+
+  if (labels.length > 0) {
+    return labels
+  }
+
+  return ['Admin']
+})
+
+const handleOpenProfile = async () => {
+  await router.push('/profile')
+}
 
 const handleLogout = async () => {
   await authStore.logout()

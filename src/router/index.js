@@ -4,12 +4,12 @@ import { adminRoutes } from './routes/admin.routes'
 import { registerAuthGuard } from './guards/auth.guard'
 
 const routes = [
-  {
-    path: '/',
-    redirect: '/login',
-  },
   ...authRoutes,
   ...adminRoutes,
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/dashboard',
+  },
 ]
 
 const router = createRouter({
