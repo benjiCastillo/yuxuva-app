@@ -17,7 +17,7 @@
         YX
       </div>
       <div class="ml-3 min-w-0">
-        <p class="truncate text-sm font-semibold text-slate-900">Yuxuva Admin</p>
+        <p class="truncate text-sm font-semibold text-slate-900">Rally Control</p>
         <p class="truncate text-xs text-slate-500">Operations panel</p>
       </div>
     </div>

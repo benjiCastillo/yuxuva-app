@@ -49,9 +49,6 @@ const maxLength = computed(() => {
 })
 
 const className = computed(() => {
-    return [
-        'block truncate-1 font-bold mb-1 text-slate-700 dark:text-slate-200',
-        isRequired.value ? 'required' : '',
-    ]
+    return ['block truncate-1 font-bold mb-1 text-slate-700 dark:text-slate-200', isRequired.value ? 'required' : '']
 })
 </script>

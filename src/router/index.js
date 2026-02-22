@@ -4,17 +4,17 @@ import { adminRoutes } from './routes/admin.routes'
 import { registerAuthGuard } from './guards/auth.guard'
 
 const routes = [
-  ...authRoutes,
-  ...adminRoutes,
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/dashboard',
-  },
+    ...authRoutes,
+    ...adminRoutes,
+    {
+        path: '/:pathMatch(.*)*',
+        redirect: '/dashboard',
+    },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+    history: createWebHistory(),
+    routes,
 })
 
 registerAuthGuard(router)

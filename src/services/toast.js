@@ -1,10 +1,10 @@
 let toastInstance = null
 
 export const setToast = (toast) => {
-  toastInstance = toast
+    toastInstance = toast
 }
 
 export const showToast = (options) => {
-  if (!toastInstance) return
-  toastInstance.add(options)
+    if (!toastInstance) return
+    toastInstance.add(options)
 }

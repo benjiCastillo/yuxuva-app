@@ -61,6 +61,7 @@ const authStore = useAuthStore()
 const menuConfig: AdminMenuItem[] = [
   { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', roles: ['admin', 'manager', 'viewer'] },
   { label: 'Users', icon: 'pi pi-users', route: '/users', roles: ['admin', 'manager'] },
+  { label: 'Campeonatos', icon: 'pi pi-trophy', route: '/championships', roles: ['admin', 'manager', 'viewer'] },
 ]
 
 const role = computed(() => {

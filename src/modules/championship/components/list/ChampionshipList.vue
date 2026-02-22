@@ -1,0 +1,187 @@
+<template>
+    <section>
+        <div class="flex justify-between mb-2">
+            <span class="text-lg font-bold">Lista de trámites</span>
+            <Button label="Nuevo" icon="pi pi-plus" severity="success" size="small" @click="addModalVisible = true" />
+        </div>
+
+        <DataTable
+            :value="championships"
+            :loading="loading"
+            tableStyle="min-width: 50rem"
+            size="small"
+            filterDisplay="row"
+            showGridlines
+            rowHover>
+            <template #empty>
+                <div class="flex h-40 items-center justify-center">No se encontraron datos.</div>
+            </template>
+            <Column header="#" style="width: 3rem; max-width: 3rem">
+                <template #body="slotProps">
+                    {{ slotProps.index + 1 }}
+                </template>
+            </Column>
+            <Column field="sigla" header="Nº" :showFilterMenu="false" style="width: 7rem">
+                <template #body="slotProps">
+                    {{ slotProps.data?.sigla }}
+                </template>
+            </Column>
+            <Column field="name" header="Nombre" :showFilterMenu="false" style="width: 20rem">
+                <template #filter>
+                    <InputText
+                        v-model.trim="filters.name"
+                        inputId="name"
+                        maxlength="245"
+                        fluid
+                        @keyup.enter="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    {{ slotProps.data?.name }}
+                </template>
+            </Column>
+            <Column field="modality" header="Modalidad" :showFilterMenu="false">
+                <template #filter>
+                    <InputText
+                        v-model.trim="filters.modality"
+                        inputId="modality"
+                        maxlength="1200"
+                        fluid
+                        @keyup.enter="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    {{ slotProps.data?.modality }}
+                </template>
+            </Column>
+            <Column field="season" header="Cliente Requerido" :showFilterMenu="false" style="width: 7rem"></Column>
+            <Column field="status" header="Estado" :showFilterMenu="false" style="width: 7rem"></Column>
+            <Column header="Acciones" :showFilterMenu="false" style="width: 10rem">
+                <template #filter>
+                    <Button
+                        severity="secondary"
+                        type="button"
+                        size="small"
+                        icon="pi pi-filter-slash"
+                        outlined
+                        @click="clearFilters" />
+                </template>
+                <template #body="slotProps">
+                    <div class="flex gap-1">
+                        <Button
+                            severity="warn"
+                            type="button"
+                            size="small"
+                            icon="pi pi-pencil"
+                            title="Editar"
+                            @click="editChampionship(slotProps.data?.id)" />
+
+                        <Button
+                            severity="danger"
+                            type="button"
+                            size="small"
+                            icon="pi pi-trash"
+                            title="Eliminar"
+                            @click="deleteChampionship(slotProps.data?.id)" />
+                    </div>
+                </template>
+            </Column>
+        </DataTable>
+        <PaginatorComponent :filters="filters" :meta="meta" @toPage="toPage" @applyFilters="applyFilters" />
+    </section>
+</template>
+<script setup>
+import { onMounted, nextTick, ref } from 'vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+
+import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
+
+//filters
+import { useUrlFilters } from '@/shared/composables/use-url-filters'
+import { useGetChampionships } from '../../composables/get-championships.composable'
+
+import { useToast } from 'primevue/usetoast'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const props = defineProps({
+    comCuentaId: {
+        type: Number,
+        default: null,
+    },
+    atcSolicitanteId: {
+        type: Number,
+        default: null,
+    },
+    useUrl: {
+        type: Boolean,
+        default: true,
+    },
+    limit: {
+        type: Number,
+        default: 20,
+    },
+})
+
+const toast = useToast()
+
+const addModalVisible = ref(false)
+const editModalVisible = ref(false)
+const deleteModalVisible = ref(false)
+const championshipId = ref(null)
+
+const { championships, meta, loading, get } = useGetChampionships({
+    onError: (error) => {
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.message,
+            life: 3000,
+        })
+    },
+})
+
+const { filters, updateFilters, resetFilters } = useUrlFilters(
+    {
+        page: 1,
+        limit: props.limit,
+    },
+    props.useUrl
+)
+
+const applyFilters = (next) => {
+    updateFilters(next)
+    get(filters.value)
+}
+
+const toPage = (page) => {
+    updateFilters({ page })
+    get(filters.value)
+}
+
+const clearFilters = async () => {
+    resetFilters()
+    await nextTick()
+    get(filters.value)
+}
+
+const editChampionship = (id) => {
+    championshipId.value = id
+    editModalVisible.value = true
+}
+
+const deleteChampionship = (id) => {
+    championshipId.value = id
+    deleteModalVisible.value = true
+}
+
+const onSuccess = () => {
+    get(filters.value)
+}
+
+onMounted(() => {
+    get(filters.value)
+})
+</script>

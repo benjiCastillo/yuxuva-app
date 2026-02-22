@@ -1,6 +1,6 @@
 <template>
-  <RouterView />
-  <Toast position="top-right" />
+    <RouterView />
+    <Toast position="top-right" />
 </template>
 
 <script setup>
@@ -13,6 +13,6 @@ import { setToast } from '@/services/toast'
 const toast = useToast()
 
 onMounted(() => {
-  setToast(toast)
+    setToast(toast)
 })
 </script>
