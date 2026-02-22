@@ -1,10 +1,8 @@
 <template>
-    <section>
-        <div class="flex justify-between mb-2">
-            <span class="text-lg font-bold">Lista de trámites</span>
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex justify-end mb-2">
             <Button label="Nuevo" icon="pi pi-plus" severity="success" size="small" @click="addModalVisible = true" />
         </div>
-
         <DataTable
             :value="championships"
             :loading="loading"
@@ -21,12 +19,7 @@
                     {{ slotProps.index + 1 }}
                 </template>
             </Column>
-            <Column field="sigla" header="Nº" :showFilterMenu="false" style="width: 7rem">
-                <template #body="slotProps">
-                    {{ slotProps.data?.sigla }}
-                </template>
-            </Column>
-            <Column field="name" header="Nombre" :showFilterMenu="false" style="width: 20rem">
+            <Column field="name" header="Nombre" :showFilterMenu="false">
                 <template #filter>
                     <InputText
                         v-model.trim="filters.name"
@@ -39,7 +32,7 @@
                     {{ slotProps.data?.name }}
                 </template>
             </Column>
-            <Column field="modality" header="Modalidad" :showFilterMenu="false">
+            <Column field="modality" header="Modalidad" :showFilterMenu="false" style="width: 20rem">
                 <template #filter>
                     <InputText
                         v-model.trim="filters.modality"
@@ -52,8 +45,13 @@
                     {{ slotProps.data?.modality }}
                 </template>
             </Column>
-            <Column field="season" header="Cliente Requerido" :showFilterMenu="false" style="width: 7rem"></Column>
+            <Column field="season" header="Temporada" :showFilterMenu="false" style="width: 7rem"></Column>
             <Column field="status" header="Estado" :showFilterMenu="false" style="width: 7rem"></Column>
+            <Column field="federation" header="Organiza" :showFilterMenu="false" style="width: 7rem">
+                <template #body="slotProps">
+                    {{ slotProps.data?.federation?.acronym }}
+                </template>
+            </Column>
             <Column header="Acciones" :showFilterMenu="false" style="width: 10rem">
                 <template #filter>
                     <Button
@@ -107,18 +105,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const props = defineProps({
-    comCuentaId: {
-        type: Number,
-        default: null,
-    },
-    atcSolicitanteId: {
-        type: Number,
-        default: null,
-    },
-    useUrl: {
-        type: Boolean,
-        default: true,
-    },
     limit: {
         type: Number,
         default: 20,
@@ -133,10 +119,10 @@ const deleteModalVisible = ref(false)
 const championshipId = ref(null)
 
 const { championships, meta, loading, get } = useGetChampionships({
-    onError: (error) => {
+    onError: (title, error) => {
         toast.add({
             severity: 'error',
-            summary: 'Error',
+            summary: title,
             detail: error.message,
             life: 3000,
         })
@@ -147,8 +133,13 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
     {
         page: 1,
         limit: props.limit,
+        name: '',
+        modality: '',
+        season: '',
+        status: '',
+        federation: '',
     },
-    props.useUrl
+    true
 )
 
 const applyFilters = (next) => {
