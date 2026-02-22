@@ -16,7 +16,7 @@ import { getRuleValue } from '@/shared/utils/get-rule-value'
 const props = defineProps({
     atcPaso: {
         type: Object,
-        default: {},
+        default: () => ({}),
     },
     fieldName: {
         type: String,
