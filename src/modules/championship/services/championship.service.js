@@ -17,11 +17,11 @@ ChampionshipService.selectData = async (atcTramiteId) => {
 }
 
 ChampionshipService.add = async (data) => {
-    return http.post(`${urlEntity}/create`, data).then((res) => res)
+    return http.post(`${urlEntity}`, data).then((res) => res)
 }
 
 ChampionshipService.update = async (id, data) => {
-    return http.patch(`${urlEntity}/update/${id}`, data).then((res) => res)
+    return http.patch(`${urlEntity}/${id}`, data).then((res) => res)
 }
 
 ChampionshipService.delete = async (id) => {

@@ -24,11 +24,11 @@ export const useGetChampionships = ({ onError } = {}) => {
             meta.value.totalPages = response.data.meta.totalPages
         } catch (error) {
             errorState.value = {
-                message: error.response.data.message ?? 'Ocurrió un error al obtener los campeonatos',
+                message: error.response.data.message || 'Ocurrió un error al obtener los campeonatos',
                 status: error.response.status,
             }
             championships.value = []
-            onError(error.response.data.error ?? 'Error', errorState.value)
+            onError(error.response.data.error || 'Error', errorState.value)
         } finally {
             loading.value = false
         }

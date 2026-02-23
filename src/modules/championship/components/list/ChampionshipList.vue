@@ -84,6 +84,8 @@
             </Column>
         </DataTable>
         <PaginatorComponent :filters="filters" :meta="meta" @toPage="toPage" @applyFilters="applyFilters" />
+
+        <ChampionshipAddModal v-if="addModalVisible" v-model="addModalVisible" @success="onSuccess" />
     </section>
 </template>
 <script setup>
@@ -94,6 +96,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
+import ChampionshipAddModal from '../add/ChampionshipAddModal.vue'
 
 //filters
 import { useUrlFilters } from '@/shared/composables/use-url-filters'
