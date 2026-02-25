@@ -4,16 +4,16 @@
             <InputTextCommon type="text" fieldName="name" title="Nombre" rules="required|max:200" />
         </div>
         <div class="col-span-12 md:col-span-6">
-            <InputTextCommon type="text" fieldName="modality" title="Modalidad" rules="required|max:60" />
+            <ModalitySelect fieldName="modality" title="Modalidad" rules="required" />
         </div>
         <div class="col-span-12 md:col-span-6">
             <InputTextCommon type="number" fieldName="season" title="Temporada" rules="required" />
         </div>
         <div class="col-span-12 md:col-span-6">
-            <InputTextCommon type="text" fieldName="status" title="Estado" rules="required|max:60" />
+            <StatusSelect fieldName="status" title="Estado" rules="required" />
         </div>
         <div class="col-span-12 md:col-span-6">
-            <InputTextCommon type="text" fieldName="federationId" title="Federación" rules="required|max:60" />
+            <FederationSelect fieldName="federationId" title="Federación" rules="required" />
         </div>
         <div class="col-span-12 flex justify-between mt-4">
             <Button label="Cancelar" icon="pi pi-times" severity="secondary" @click="emit('close')" />
@@ -32,8 +32,12 @@
 import { ref } from 'vue'
 import { Form } from 'vee-validate'
 import Button from 'primevue/button'
-import InputTextCommon from '@/shared/components/form-common/InputTextCommon.vue'
 import { setupValidation } from '@/shared/utils/setup-validation'
+
+import InputTextCommon from '@/shared/components/form-common/InputTextCommon.vue'
+import FederationSelect from '@/modules/federation/components/FederationSelect.vue'
+import ModalitySelect from '../commons/ModalitySelect.vue'
+import StatusSelect from '../commons/StatusSelect.vue'
 
 import { useToast } from 'primevue/usetoast'
 
@@ -51,7 +55,7 @@ const championshipForm = ref({
     modality: 'RALLY',
     season: new Date().getFullYear(),
     status: 'PLANNED',
-    federationId: 'ddd41b4f-0dc4-4dfd-a960-26bc14927999 1',
+    federationId: null,
 })
 
 const { championship, createChampionship, loading, errorState } = useCreateChampionship({
@@ -79,7 +83,6 @@ const onSubmit = async (values, { setTouched, setFieldError }) => {
         emit('created', championship.value)
         return
     }
-    console.log(errorState.value)
     applyApiErrors(errorState.value, setFieldError)
 }
 </script>

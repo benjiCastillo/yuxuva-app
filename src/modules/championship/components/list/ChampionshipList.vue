@@ -86,6 +86,11 @@
         <PaginatorComponent :filters="filters" :meta="meta" @toPage="toPage" @applyFilters="applyFilters" />
 
         <ChampionshipAddModal v-if="addModalVisible" v-model="addModalVisible" @success="onSuccess" />
+        <ChampionshipDeleteModal
+            v-if="deleteModalVisible"
+            v-model="deleteModalVisible"
+            :championshipId="championshipId"
+            @success="onSuccess" />
     </section>
 </template>
 <script setup>
@@ -97,6 +102,7 @@ import InputText from 'primevue/inputtext'
 
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import ChampionshipAddModal from '../add/ChampionshipAddModal.vue'
+import ChampionshipDeleteModal from '../delete/ChampionshipDeleteModal.vue'
 
 //filters
 import { useUrlFilters } from '@/shared/composables/use-url-filters'
