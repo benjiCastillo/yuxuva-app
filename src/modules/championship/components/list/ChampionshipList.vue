@@ -34,12 +34,10 @@
             </Column>
             <Column field="modality" header="Modalidad" :showFilterMenu="false" style="width: 20rem">
                 <template #filter>
-                    <InputText
+                    <ModalitySelect
                         v-model.trim="filters.modality"
-                        inputId="modality"
-                        maxlength="1200"
-                        fluid
-                        @keyup.enter="applyFilters()" />
+                        fieldName="modality"
+                        @update:modelValue="applyFilters()" />
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data?.modality }}
@@ -47,7 +45,13 @@
             </Column>
             <Column field="season" header="Temporada" :showFilterMenu="false" style="width: 7rem"></Column>
             <Column field="status" header="Estado" :showFilterMenu="false" style="width: 7rem"></Column>
-            <Column field="federation" header="Organiza" :showFilterMenu="false" style="width: 7rem">
+            <Column field="federationId" header="Organiza" :showFilterMenu="false" style="width: 7rem">
+                <template #filter>
+                    <FederationSelect
+                        v-model.trim="filters.federationId"
+                        fieldName="federationId"
+                        @update:modelValue="applyFilters()" />
+                </template>
                 <template #body="slotProps">
                     {{ slotProps.data?.federation?.acronym }}
                 </template>
@@ -86,6 +90,13 @@
         <PaginatorComponent :filters="filters" :meta="meta" @toPage="toPage" @applyFilters="applyFilters" />
 
         <ChampionshipAddModal v-if="addModalVisible" v-model="addModalVisible" @success="onSuccess" />
+
+        <ChampionshipEditModal
+            v-if="editModalVisible"
+            v-model="editModalVisible"
+            :championshipId="championshipId"
+            @success="onSuccess" />
+
         <ChampionshipDeleteModal
             v-if="deleteModalVisible"
             v-model="deleteModalVisible"
@@ -100,8 +111,11 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 
+import FederationSelect from '@/modules/federation/components/FederationSelect.vue'
+import ModalitySelect from '../commons/ModalitySelect.vue'
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import ChampionshipAddModal from '../add/ChampionshipAddModal.vue'
+import ChampionshipEditModal from '../edit/ChampionshipEditModal.vue'
 import ChampionshipDeleteModal from '../delete/ChampionshipDeleteModal.vue'
 
 //filters
@@ -146,7 +160,7 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
         modality: '',
         season: '',
         status: '',
-        federation: '',
+        federationId: '',
     },
     true
 )

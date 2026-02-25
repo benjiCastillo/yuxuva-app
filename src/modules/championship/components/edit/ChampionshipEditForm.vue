@@ -1,5 +1,9 @@
 <template>
-    <Form :initial-values="championshipForm" class="grid grid-cols-12 gap-2 w-full" @submit="onSubmit">
+    <Form
+        v-if="championshipForm"
+        :initial-values="championshipForm"
+        class="grid grid-cols-12 gap-2 w-full"
+        @submit="onSubmit">
         <div class="col-span-12">
             <InputTextCommon type="text" fieldName="name" title="Nombre" rules="required|max:200" />
         </div>
@@ -19,9 +23,9 @@
             <Button label="Cancelar" icon="pi pi-times" severity="secondary" @click="emit('close')" />
             <Button
                 type="submit"
-                label="Agregar"
-                icon="pi pi-plus"
-                severity="success"
+                label="Modificar"
+                icon="pi pi-pencil"
+                severity="warn"
                 :loading="loading"
                 :disabled="loading" />
         </div>
@@ -41,24 +45,36 @@ import StatusSelect from '../commons/StatusSelect.vue'
 
 import { useToast } from 'primevue/usetoast'
 
-import { useCreateChampionship } from '../../composables/create-championship.composable'
+import { useUpdateChampionship } from '../../composables/update-championship.composable'
 import { applyApiErrors } from '@/shared/utils/apply-api-errors'
 
-const emit = defineEmits(['created', 'close'])
+const emit = defineEmits(['updated', 'close'])
 
 const toast = useToast()
+
+const props = defineProps({
+    championship: {
+        type: Object,
+        default: null,
+    },
+})
 
 setupValidation()
 
 const championshipForm = ref({
-    name: null,
-    modality: 'RALLY',
-    season: new Date().getFullYear(),
-    status: 'PLANNED',
-    federationId: null,
+    name: props.championship?.name,
+    modality: props.championship?.modality,
+    season: props.championship?.season,
+    status: props.championship?.status,
+    federationId: props.championship?.federationId,
 })
 
-const { championship, createChampionship, loading, errorState } = useCreateChampionship({
+const {
+    championship: championshipUpdated,
+    updateChampionship,
+    loading,
+    errorState,
+} = useUpdateChampionship({
     onError: (title, error) => {
         toast.add({
             severity: 'error',
@@ -71,16 +87,15 @@ const { championship, createChampionship, loading, errorState } = useCreateChamp
 
 const onSubmit = async (values, { setTouched, setFieldError }) => {
     setTouched(true, true)
-    await createChampionship(values)
-
-    if (championship.value?.id) {
+    await updateChampionship(props.championship.id, values)
+    if (championshipUpdated.value?.id) {
         toast.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: `Campeonato agregado correctamente ${championship.value.name}`,
+            detail: `Campeonato modificado correctamente ${championshipUpdated.value.name}`,
             life: 3000,
         })
-        emit('created', championship.value)
+        emit('updated', championshipUpdated.value)
         return
     }
     applyApiErrors(errorState.value, setFieldError)
