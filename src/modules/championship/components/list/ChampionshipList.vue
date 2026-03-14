@@ -47,10 +47,7 @@
             <Column field="status" header="Estado" :showFilterMenu="false" style="width: 7rem"></Column>
             <Column field="federationId" header="Organiza" :showFilterMenu="false" style="width: 7rem">
                 <template #filter>
-                    <FederationSelect
-                        v-model.trim="filters.federationId"
-                        fieldName="federationId"
-                        @update:modelValue="applyFilters()" />
+                    <FederationSelectFilter v-model.trim="filters.federationId" @update:modelValue="applyFilters()" />
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data?.federation?.acronym }}
@@ -111,7 +108,7 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 
-import FederationSelect from '@/modules/federation/components/FederationSelect.vue'
+import FederationSelectFilter from '@/modules/federation/components/FederationSelectFilter.vue'
 import ModalitySelect from '../commons/ModalitySelect.vue'
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import ChampionshipAddModal from '../add/ChampionshipAddModal.vue'
