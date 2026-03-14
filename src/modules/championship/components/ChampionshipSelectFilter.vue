@@ -1,8 +1,8 @@
 <template>
     <Select
         :modelValue="modelValue"
-        :options="federations"
-        optionLabel="acronym"
+        :options="championships"
+        optionLabel="name"
         optionValue="id"
         fluid
         filter
@@ -16,7 +16,7 @@ import { onMounted } from 'vue'
 import Select from 'primevue/select'
 import { useToast } from 'primevue/usetoast'
 
-import { useSelectDataFederation } from '../composables/select-data-federation.composable'
+import { useSelectDataChampionship } from '../composables/select-data-championship.composable'
 
 defineProps({
     modelValue: {
@@ -29,7 +29,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const toast = useToast()
 
-const { federations, selectData } = useSelectDataFederation({
+const { championships, selectData } = useSelectDataChampionship({
     onError: (title, error) => {
         toast.add({
             severity: 'error',

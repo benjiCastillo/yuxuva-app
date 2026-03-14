@@ -3,13 +3,11 @@
         <label :for="fieldName" :class="className">{{ title }}</label>
         <Select
             :modelValue="field.value"
-            :options="momentos"
+            :options="statuses"
             optionLabel="name"
             optionValue="value"
             fluid
             filter
-            :autoFilterFocus="showClear"
-            :showClear="showClear"
             @update:modelValue="field.onChange" />
         <small v-if="errors.length" class="text-red-500">
             {{ errors[0] }}
@@ -17,7 +15,7 @@
     </Field>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Field } from 'vee-validate'
 import Select from 'primevue/select'
 
@@ -34,15 +32,13 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    showClear: {
-        type: Boolean,
-        default: false,
-    },
 })
 
-const momentos = ref([
-    { name: 'RALLY', value: 'RALLY' },
-    { name: 'CIRCUITO', value: 'CIRCUITO' },
+const statuses = ref([
+    { name: 'PROGRAMADO', value: 'SCHEDULED' },
+    { name: 'EN CURSO', value: 'ONGOING' },
+    { name: 'COMPLETADO', value: 'COMPLETED' },
+    { name: 'CANCELADO', value: 'CANCELLED' },
 ])
 
 const isRequired = computed(() => {

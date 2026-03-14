@@ -4,9 +4,9 @@
             <Button label="Nuevo" icon="pi pi-plus" severity="success" size="small" @click="addModalVisible = true" />
         </div>
         <DataTable
-            :value="departmentAssociations"
+            :value="championshipCalendars"
             :loading="loading"
-            tableStyle="min-width: 50rem"
+            tableStyle="min-width: 70rem"
             size="small"
             filterDisplay="row"
             showGridlines
@@ -19,44 +19,53 @@
                     {{ slotProps.index + 1 }}
                 </template>
             </Column>
-            <Column field="name" header="Nombre" :showFilterMenu="false">
+            <Column field="eventName" header="Evento" :showFilterMenu="false" style="width: 18rem">
                 <template #filter>
                     <InputText
-                        v-model.trim="filters.name"
-                        inputId="name"
+                        v-model.trim="filters.eventName"
+                        inputId="eventName"
                         maxlength="245"
                         fluid
                         @keyup.enter="applyFilters()" />
                 </template>
             </Column>
-            <Column field="department" header="Departamento" :showFilterMenu="false" style="width: 14rem">
+            <Column field="championshipId" header="Campeonato" :showFilterMenu="false" style="width: 16rem">
+                <template #filter>
+                    <ChampionshipSelectFilter
+                        v-model.trim="filters.championshipId"
+                        @update:modelValue="applyFilters()" />
+                </template>
                 <template #body="slotProps">
-                    {{ slotProps.data?.department }}
+                    {{ slotProps.data?.championship?.name }}
+                </template>
+            </Column>
+            <Column field="associationId" header="Asociacion" :showFilterMenu="false" style="width: 16rem">
+                <template #filter>
+                    <DepartmentAssociationSelectFilter
+                        v-model.trim="filters.associationId"
+                        @update:modelValue="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    {{ slotProps.data?.association?.name }}
+                </template>
+            </Column>
+            <Column field="roundNumber" header="Fecha" :showFilterMenu="false" style="width: 6rem"></Column>
+            <Column field="startDate" header="Inicio" :showFilterMenu="false" style="width: 10rem">
+                <template #body="slotProps">
+                    {{ formatDate(slotProps.data?.startDate) }}
+                </template>
+            </Column>
+            <Column field="endDate" header="Fin" :showFilterMenu="false" style="width: 10rem">
+                <template #body="slotProps">
+                    {{ formatDate(slotProps.data?.endDate) }}
                 </template>
             </Column>
             <Column field="status" header="Estado" :showFilterMenu="false" style="width: 10rem">
                 <template #filter>
-                    <Select
-                        v-model.trim="filters.status"
-                        :options="statusOptions"
-                        optionLabel="name"
-                        optionValue="value"
-                        fluid
-                        filter
-                        autoFilterFocus
-                        showClear
-                        @update:modelValue="applyFilters()" />
+                    <StatusSelectFilter v-model.trim="filters.status" @update:modelValue="applyFilters()" />
                 </template>
                 <template #body="slotProps">
                     <StatusDisplay :status="slotProps.data?.status" />
-                </template>
-            </Column>
-            <Column field="federationId" header="Federacion" :showFilterMenu="false" style="width: 10rem">
-                <template #filter>
-                    <FederationSelectFilter v-model.trim="filters.federationId" @update:modelValue="applyFilters()" />
-                </template>
-                <template #body="slotProps">
-                    {{ slotProps.data?.federation?.acronym }}
                 </template>
             </Column>
             <Column header="Acciones" :showFilterMenu="false" style="width: 10rem">
@@ -77,7 +86,7 @@
                             size="small"
                             icon="pi pi-pencil"
                             title="Editar"
-                            @click="editDepartmentAssociation(slotProps.data?.id)" />
+                            @click="editChampionshipCalendar(slotProps.data?.id)" />
 
                         <Button
                             severity="danger"
@@ -85,25 +94,25 @@
                             size="small"
                             icon="pi pi-trash"
                             title="Eliminar"
-                            @click="deleteDepartmentAssociation(slotProps.data?.id)" />
+                            @click="deleteChampionshipCalendar(slotProps.data?.id)" />
                     </div>
                 </template>
             </Column>
         </DataTable>
         <PaginatorComponent :filters="filters" :meta="meta" @toPage="toPage" @applyFilters="applyFilters" />
 
-        <DepartmentAssociationAddModal v-if="addModalVisible" v-model="addModalVisible" @success="onSuccess" />
+        <ChampionshipCalendarAddModal v-if="addModalVisible" v-model="addModalVisible" @success="onSuccess" />
 
-        <DepartmentAssociationEditModal
+        <ChampionshipCalendarEditModal
             v-if="editModalVisible"
             v-model="editModalVisible"
-            :departmentAssociationId="departmentAssociationId"
+            :championshipCalendarId="championshipCalendarId"
             @success="onSuccess" />
 
-        <DepartmentAssociationDeleteModal
+        <ChampionshipCalendarDeleteModal
             v-if="deleteModalVisible"
             v-model="deleteModalVisible"
-            :departmentAssociationId="departmentAssociationId"
+            :championshipCalendarId="championshipCalendarId"
             @success="onSuccess" />
     </section>
 </template>
@@ -113,18 +122,19 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import { useToast } from 'primevue/usetoast'
 
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import { useUrlFilters } from '@/shared/composables/use-url-filters'
-import FederationSelectFilter from '@/modules/federation/components/FederationSelectFilter.vue'
-import StatusDisplay from '../commons/StatusDisplay.vue'
+import ChampionshipSelectFilter from '@/modules/championship/components/ChampionshipSelectFilter.vue'
+import DepartmentAssociationSelectFilter from '@/modules/department-association/components/DepartmentAssociationSelectFilter.vue'
 
-import DepartmentAssociationAddModal from '../add/DepartmentAssociationAddModal.vue'
-import DepartmentAssociationEditModal from '../edit/DepartmentAssociationEditModal.vue'
-import DepartmentAssociationDeleteModal from '../delete/DepartmentAssociationDeleteModal.vue'
-import { useGetDepartmentAssociations } from '../../composables/get-department-associations.composable'
+import StatusDisplay from '../commons/StatusDisplay.vue'
+import StatusSelectFilter from '../commons/StatusSelectFilter.vue'
+import ChampionshipCalendarAddModal from '../add/ChampionshipCalendarAddModal.vue'
+import ChampionshipCalendarEditModal from '../edit/ChampionshipCalendarEditModal.vue'
+import ChampionshipCalendarDeleteModal from '../delete/ChampionshipCalendarDeleteModal.vue'
+import { useGetChampionshipCalendars } from '../../composables/get-championship-calendars.composable'
 
 const props = defineProps({
     limit: {
@@ -138,14 +148,9 @@ const toast = useToast()
 const addModalVisible = ref(false)
 const editModalVisible = ref(false)
 const deleteModalVisible = ref(false)
-const departmentAssociationId = ref(null)
+const championshipCalendarId = ref(null)
 
-const statusOptions = [
-    { name: 'ACTIVO', value: 'ACTIVE' },
-    { name: 'INACTIVO', value: 'INACTIVE' },
-]
-
-const { departmentAssociations, meta, loading, get } = useGetDepartmentAssociations({
+const { championshipCalendars, meta, loading, get } = useGetChampionshipCalendars({
     onError: (title, error) => {
         toast.add({
             severity: 'error',
@@ -160,12 +165,25 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
     {
         page: 1,
         limit: props.limit,
-        name: '',
+        eventName: '',
+        championshipId: '',
+        associationId: '',
         status: '',
-        federationId: '',
     },
     true
 )
+
+const formatDate = (value) => {
+    if (!value) {
+        return ''
+    }
+
+    return new Intl.DateTimeFormat('es-BO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(new Date(value))
+}
 
 const applyFilters = (next) => {
     updateFilters(next)
@@ -183,13 +201,13 @@ const clearFilters = async () => {
     get(filters.value)
 }
 
-const editDepartmentAssociation = (id) => {
-    departmentAssociationId.value = id
+const editChampionshipCalendar = (id) => {
+    championshipCalendarId.value = id
     editModalVisible.value = true
 }
 
-const deleteDepartmentAssociation = (id) => {
-    departmentAssociationId.value = id
+const deleteChampionshipCalendar = (id) => {
+    championshipCalendarId.value = id
     deleteModalVisible.value = true
 }
 

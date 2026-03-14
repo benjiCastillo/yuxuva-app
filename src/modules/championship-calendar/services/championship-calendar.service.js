@@ -1,31 +1,31 @@
 import http from '@/services/http'
 import { clearObj } from '@/shared/utils/clear-obj'
 
-const ChampionshipService = {}
-const urlEntity = '/championships'
+const ChampionshipCalendarService = {}
+const urlEntity = '/championship-calendars'
 
-ChampionshipService.get = async (query = {}) => {
+ChampionshipCalendarService.get = async (query = {}) => {
     return http.get(`${urlEntity}`, { params: clearObj(query) }).then((res) => res)
 }
 
-ChampionshipService.findOne = async (id) => {
+ChampionshipCalendarService.findOne = async (id) => {
     return http.get(`${urlEntity}/${id}`).then((res) => res)
 }
 
-ChampionshipService.selectData = async () => {
+ChampionshipCalendarService.selectData = async () => {
     return http.get(`${urlEntity}/select-data`).then((res) => res)
 }
 
-ChampionshipService.add = async (data) => {
+ChampionshipCalendarService.add = async (data) => {
     return http.post(`${urlEntity}`, data).then((res) => res)
 }
 
-ChampionshipService.update = async (id, data) => {
+ChampionshipCalendarService.update = async (id, data) => {
     return http.patch(`${urlEntity}/${id}`, data).then((res) => res)
 }
 
-ChampionshipService.delete = async (id) => {
+ChampionshipCalendarService.delete = async (id) => {
     return http.delete(`${urlEntity}/${id}`).then((res) => res)
 }
 
-export default ChampionshipService
+export default ChampionshipCalendarService

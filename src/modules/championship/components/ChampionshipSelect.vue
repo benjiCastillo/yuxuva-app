@@ -3,13 +3,11 @@
         <label :for="fieldName" :class="className">{{ title }}</label>
         <Select
             :modelValue="field.value"
-            :options="momentos"
+            :options="championships"
             optionLabel="name"
-            optionValue="value"
+            optionValue="id"
             fluid
             filter
-            :autoFilterFocus="showClear"
-            :showClear="showClear"
             @update:modelValue="field.onChange" />
         <small v-if="errors.length" class="text-red-500">
             {{ errors[0] }}
@@ -17,9 +15,12 @@
     </Field>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { Field } from 'vee-validate'
 import Select from 'primevue/select'
+import { useToast } from 'primevue/usetoast'
+
+import { useSelectDataChampionship } from '../composables/select-data-championship.composable'
 
 const props = defineProps({
     fieldName: {
@@ -34,16 +35,9 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    showClear: {
-        type: Boolean,
-        default: false,
-    },
 })
 
-const momentos = ref([
-    { name: 'RALLY', value: 'RALLY' },
-    { name: 'CIRCUITO', value: 'CIRCUITO' },
-])
+const toast = useToast()
 
 const isRequired = computed(() => {
     return props.rules.includes('required')
@@ -51,5 +45,20 @@ const isRequired = computed(() => {
 
 const className = computed(() => {
     return ['block truncate-1 font-bold mb-1', isRequired.value ? 'required' : '']
+})
+
+const { championships, selectData } = useSelectDataChampionship({
+    onError: (title, error) => {
+        toast.add({
+            severity: 'error',
+            summary: title,
+            detail: error.message,
+            life: 3000,
+        })
+    },
+})
+
+onMounted(() => {
+    selectData()
 })
 </script>

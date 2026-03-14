@@ -37,6 +37,7 @@
                     <ModalitySelect
                         v-model.trim="filters.modality"
                         fieldName="modality"
+                        showClear
                         @update:modelValue="applyFilters()" />
                 </template>
                 <template #body="slotProps">
@@ -44,7 +45,11 @@
                 </template>
             </Column>
             <Column field="season" header="Temporada" :showFilterMenu="false" style="width: 7rem"></Column>
-            <Column field="status" header="Estado" :showFilterMenu="false" style="width: 7rem"></Column>
+            <Column field="status" header="Estado" :showFilterMenu="false" style="width: 7rem">
+                <template #body="slotProps">
+                    <StatusDisplay :status="slotProps.data?.status" />
+                </template>
+            </Column>
             <Column field="federationId" header="Organiza" :showFilterMenu="false" style="width: 7rem">
                 <template #filter>
                     <FederationSelectFilter v-model.trim="filters.federationId" @update:modelValue="applyFilters()" />
@@ -110,6 +115,7 @@ import InputText from 'primevue/inputtext'
 
 import FederationSelectFilter from '@/modules/federation/components/FederationSelectFilter.vue'
 import ModalitySelect from '../commons/ModalitySelect.vue'
+import StatusDisplay from '../commons/StatusDisplay.vue'
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import ChampionshipAddModal from '../add/ChampionshipAddModal.vue'
 import ChampionshipEditModal from '../edit/ChampionshipEditModal.vue'
