@@ -4,6 +4,7 @@ import ProfilePage from '@/modules/admin/pages/ProfilePage.vue'
 import UsersPage from '@/modules/admin/pages/UsersPage.vue'
 
 import { championshipRoutes } from './championship.routes'
+import { departmentAssociationRoutes } from './department-association.routes'
 
 export const adminRoutes = [
     {
@@ -43,6 +44,7 @@ export const adminRoutes = [
                 },
             },
             ...championshipRoutes,
+            ...departmentAssociationRoutes,
         ],
     },
 ]
