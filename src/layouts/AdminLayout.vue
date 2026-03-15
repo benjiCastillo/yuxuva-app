@@ -54,6 +54,18 @@ const menuConfig = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', roles: ['admin', 'manager', 'viewer'] },
     { label: 'Users', icon: 'pi pi-users', route: '/users', roles: ['admin', 'manager'] },
     {
+        label: 'Autos',
+        icon: 'pi pi-car',
+        route: '/cars',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
+        label: 'Pilotos',
+        icon: 'pi pi-user',
+        route: '/drivers',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
         label: 'Categorias',
         icon: 'pi pi-tags',
         route: '/categories',
