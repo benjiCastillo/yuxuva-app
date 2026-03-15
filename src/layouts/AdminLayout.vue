@@ -54,6 +54,12 @@ const menuConfig = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', roles: ['admin', 'manager', 'viewer'] },
     { label: 'Users', icon: 'pi pi-users', route: '/users', roles: ['admin', 'manager'] },
     {
+        label: 'Categorias',
+        icon: 'pi pi-tags',
+        route: '/categories',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
         label: 'Calendario Campeonatos',
         icon: 'pi pi-calendar',
         route: '/championship-calendars',
