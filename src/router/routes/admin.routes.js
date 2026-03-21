@@ -9,6 +9,8 @@ import { championshipCalendarRoutes } from './championship-calendar.routes'
 import { championshipRoutes } from './championship.routes'
 import { departmentAssociationRoutes } from './department-association.routes'
 import { driverRoutes } from './driver.routes'
+import { rallyRoutes } from './rally.routes'
+import { teamRoutes } from './team.routes'
 
 export const adminRoutes = [
     {
@@ -53,6 +55,8 @@ export const adminRoutes = [
             ...championshipRoutes,
             ...departmentAssociationRoutes,
             ...driverRoutes,
+            ...rallyRoutes,
+            ...teamRoutes,
         ],
     },
 ]

@@ -66,6 +66,12 @@ const menuConfig = [
         roles: ['admin', 'manager', 'viewer'],
     },
     {
+        label: 'Equipos',
+        icon: 'pi pi-users',
+        route: '/teams',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
         label: 'Categorias',
         icon: 'pi pi-tags',
         route: '/categories',
@@ -75,6 +81,12 @@ const menuConfig = [
         label: 'Calendario Campeonatos',
         icon: 'pi pi-calendar',
         route: '/championship-calendars',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
+        label: 'Rallies',
+        icon: 'pi pi-flag',
+        route: '/rallies',
         roles: ['admin', 'manager', 'viewer'],
     },
     { label: 'Campeonatos', icon: 'pi pi-trophy', route: '/championships', roles: ['admin', 'manager', 'viewer'] },
