@@ -89,6 +89,18 @@ const menuConfig = [
         route: '/rallies',
         roles: ['admin', 'manager', 'viewer'],
     },
+    {
+        label: 'Etapas Rally',
+        icon: 'pi pi-list',
+        route: '/rally-stages',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
+        label: 'Resultados Etapas',
+        icon: 'pi pi-stopwatch',
+        route: '/rally-stage-results',
+        roles: ['admin', 'manager', 'viewer'],
+    },
     { label: 'Campeonatos', icon: 'pi pi-trophy', route: '/championships', roles: ['admin', 'manager', 'viewer'] },
     {
         label: 'Asociaciones Departamentales',

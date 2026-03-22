@@ -12,6 +12,20 @@ export function setupValidation() {
     defineRule('is_not', is_not)
     defineRule('alpha_num', alpha_num)
     defineRule('numeric', numeric)
+    defineRule('decimal', (value) => {
+        if (value === undefined || value === null || value === '') {
+            return true
+        }
+
+        return /^-?\d+([.,]\d+)?$/.test(String(value))
+    })
+    defineRule('datetime_ms', (value) => {
+        if (value === undefined || value === null || value === '') {
+            return true
+        }
+
+        return /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/.test(String(value))
+    })
 
     defineRule('json', (value) => {
         try {
@@ -35,6 +49,8 @@ export function setupValidation() {
                 is_not: `El valor debe ser ${ctx.rule.params[0]}`,
                 alpha_num: `El valor debe ser alfanumérico`,
                 numeric: `El valor debe ser numérico`,
+                decimal: `El valor debe ser decimal`,
+                datetime_ms: `Use el formato YYYY-MM-DD HH:mm:ss.SSS`,
                 json: `El contenido no es un JSON válido`,
             }
             return messages[ctx.rule.name] || 'Campo inválido'

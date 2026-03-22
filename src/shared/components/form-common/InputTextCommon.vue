@@ -1,7 +1,13 @@
 <template>
     <Field v-slot="{ field, errors }" :name="fieldName" :rules="rules">
         <label :for="fieldName" :class="className">{{ title }}</label>
-        <InputText v-bind="field" :type="type" :class="uppercase ? 'uppercase' : ''" :maxLength="maxLength" fluid />
+        <InputText
+            v-bind="field"
+            :type="type"
+            :step="step"
+            :class="uppercase ? 'uppercase' : ''"
+            :maxLength="maxLength"
+            fluid />
         <small v-if="errors.length" class="text-red-500">
             {{ errors[0] }}
         </small>
@@ -37,6 +43,10 @@ const props = defineProps({
     type: {
         type: String,
         default: 'text',
+    },
+    step: {
+        type: [String, Number],
+        default: null,
     },
 })
 
