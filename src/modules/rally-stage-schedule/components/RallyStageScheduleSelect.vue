@@ -21,7 +21,12 @@ import { Field } from 'vee-validate'
 import Select from 'primevue/select'
 import { useToast } from 'primevue/usetoast'
 
-import { formatStageEventLabel, formatStageLabel, formatTeamLabel } from '@/modules/rally-stage/utils/rally-stage-flow'
+import {
+    formatCategoryLabel,
+    formatStageEventLabel,
+    formatStageLabel,
+    formatTeamLabel,
+} from '@/modules/rally-stage/utils/rally-stage-flow'
 
 import { useSelectDataRallyStageSchedule } from '../composables/select-data-rally-stage-schedule.composable'
 
@@ -70,6 +75,7 @@ const formattedSchedules = computed(() => {
         ...schedule,
         label: [
             formatStageLabel(schedule.stage),
+            formatCategoryLabel(schedule.category),
             formatTeamLabel(schedule.team),
             schedule.startOrder ? `Orden ${schedule.startOrder}` : null,
             formatStageEventLabel(schedule.stage),

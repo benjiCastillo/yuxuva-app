@@ -35,6 +35,14 @@
                     {{ formatTeamLabel(slotProps.data?.schedule?.team) }}
                 </template>
             </Column>
+            <Column field="categoryId" header="Categoria" :showFilterMenu="false" style="width: 14rem">
+                <template #filter>
+                    <CategorySelectFilter v-model.trim="filters.categoryId" @update:modelValue="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    {{ formatCategoryLabel(slotProps.data?.schedule?.category) || '-' }}
+                </template>
+            </Column>
             <Column field="scheduleId" header="Programacion" :showFilterMenu="false" style="width: 14rem">
                 <template #filter>
                     <RallyStageScheduleSelectFilter
@@ -143,10 +151,12 @@ import { useToast } from 'primevue/usetoast'
 
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import { useUrlFilters } from '@/shared/composables/use-url-filters'
+import CategorySelectFilter from '@/modules/category/components/CategorySelectFilter.vue'
 import RallyStageSelectFilter from '@/modules/rally-stage/components/RallyStageSelectFilter.vue'
 import TeamSelectFilter from '@/modules/team/components/TeamSelectFilter.vue'
 import RallyStageScheduleSelectFilter from '@/modules/rally-stage-schedule/components/RallyStageScheduleSelectFilter.vue'
 import {
+    formatCategoryLabel,
     formatDateTime,
     formatDuration,
     formatFinalTime,
@@ -192,6 +202,7 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
         limit: props.limit,
         scheduleId: '',
         stageId: '',
+        categoryId: '',
         teamId: '',
         status: '',
     },

@@ -12,8 +12,8 @@ TeamService.findOne = async (id) => {
     return http.get(`${urlEntity}/${id}`).then((res) => res)
 }
 
-TeamService.selectData = async () => {
-    return http.get(`${urlEntity}/select-data`).then((res) => res)
+TeamService.selectData = async (query = {}) => {
+    return http.get(`${urlEntity}/select-data`, { params: clearObj(query) }).then((res) => res)
 }
 
 TeamService.add = async (data) => {

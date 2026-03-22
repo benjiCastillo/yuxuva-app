@@ -1,13 +1,37 @@
 <template>
-    <Form :initial-values="rallyStageScheduleForm" class="grid grid-cols-12 gap-2 w-full" @submit="onSubmit">
+    <Form
+        v-slot="{ values, setFieldValue }"
+        :initial-values="rallyStageScheduleForm"
+        class="grid grid-cols-12 gap-2 w-full"
+        @submit="onSubmit">
         <div class="col-span-12 md:col-span-6">
-            <RallyStageSelect fieldName="stageId" title="Etapa" rules="required" />
+            <RallyStageSelect
+                fieldName="stageId"
+                title="Etapa"
+                rules="required"
+                @update:modelValue="handleScheduleContextChange(setFieldValue)" />
         </div>
         <div class="col-span-12 md:col-span-6">
-            <TeamSelect fieldName="teamId" title="Equipo" rules="required" />
+            <CategorySelect
+                fieldName="categoryId"
+                title="Categoria"
+                rules="required"
+                @update:modelValue="handleScheduleContextChange(setFieldValue)" />
+        </div>
+        <div class="col-span-12">
+            <TeamSelect
+                fieldName="teamId"
+                title="Equipo disponible"
+                rules="required"
+                :disabled="!values.stageId || !values.categoryId"
+                :query="buildAvailableTeamsQuery(values.stageId, values.categoryId)" />
         </div>
         <div class="col-span-12 md:col-span-4">
-            <InputTextCommon type="number" fieldName="startOrder" title="Orden de partida" rules="required|numeric" />
+            <InputTextCommon
+                type="number"
+                fieldName="startOrder"
+                title="Orden de partida en categoria"
+                rules="required|numeric" />
         </div>
         <div class="col-span-12 md:col-span-4">
             <StatusSelect fieldName="status" title="Estado" rules="required" />
@@ -55,6 +79,7 @@ import { setupValidation } from '@/shared/utils/setup-validation'
 import { applyApiErrors } from '@/shared/utils/apply-api-errors'
 import InputTextCommon from '@/shared/components/form-common/InputTextCommon.vue'
 import RallyStageSelect from '@/modules/rally-stage/components/RallyStageSelect.vue'
+import CategorySelect from '@/modules/category/components/CategorySelect.vue'
 import TeamSelect from '@/modules/team/components/TeamSelect.vue'
 
 import StatusSelect from '../commons/StatusSelect.vue'
@@ -67,6 +92,10 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    categoryId: {
+        type: String,
+        default: null,
+    },
 })
 
 const toast = useToast()
@@ -75,11 +104,28 @@ setupValidation()
 
 const rallyStageScheduleForm = ref({
     stageId: props.stageId,
+    categoryId: props.categoryId,
     teamId: null,
     startOrder: null,
     scheduledStartTime: null,
     status: 'SCHEDULED',
 })
+
+const buildAvailableTeamsQuery = (stageId, categoryId) => {
+    if (!stageId || !categoryId) {
+        return {}
+    }
+
+    return {
+        stageId,
+        categoryId,
+        excludeScheduledForStage: true,
+    }
+}
+
+const handleScheduleContextChange = (setFieldValue) => {
+    setFieldValue('teamId', null)
+}
 
 const { rallyStageSchedule, createRallyStageSchedule, loading, errorState } = useCreateRallyStageSchedule({
     onError: (title, error) => {
@@ -94,6 +140,7 @@ const { rallyStageSchedule, createRallyStageSchedule, loading, errorState } = us
 
 const serializeValues = (values) => ({
     stageId: values.stageId,
+    categoryId: values.categoryId,
     teamId: values.teamId,
     startOrder: Number(values.startOrder),
     scheduledStartTime: values.scheduledStartTime ? new Date(values.scheduledStartTime).toISOString() : null,
@@ -102,6 +149,17 @@ const serializeValues = (values) => ({
 
 const onSubmit = async (values, { setTouched, setFieldError }) => {
     setTouched(true, true)
+
+    if (!values.stageId || !values.categoryId) {
+        if (!values.stageId) {
+            setFieldError('stageId', 'Debe seleccionar una etapa')
+        }
+        if (!values.categoryId) {
+            setFieldError('categoryId', 'Debe seleccionar una categoria')
+        }
+        return
+    }
+
     await createRallyStageSchedule(serializeValues(values))
 
     if (rallyStageSchedule.value?.id) {

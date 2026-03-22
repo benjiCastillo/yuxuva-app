@@ -1,91 +1,115 @@
 <template>
     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="flex justify-end mb-2">
-            <Button label="Nuevo" icon="pi pi-plus" severity="success" size="small" @click="addModalVisible = true" />
+        <div class="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+            <div class="xl:col-span-2">
+                <label class="mb-1 block text-sm font-semibold text-slate-700">Etapa</label>
+                <RallyStageSelectFilter v-model.trim="filters.stageId" @update:modelValue="applyFilters()" />
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-semibold text-slate-700">Categoria</label>
+                <CategorySelectFilter v-model.trim="filters.categoryId" @update:modelValue="applyFilters()" />
+            </div>
+            <div class="xl:col-span-2">
+                <label class="mb-1 block text-sm font-semibold text-slate-700">Equipo</label>
+                <TeamSelectFilter
+                    v-model.trim="filters.teamId"
+                    :query="teamFilterQuery"
+                    @update:modelValue="applyFilters()" />
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-semibold text-slate-700">Estado</label>
+                <StatusSelectFilter v-model.trim="filters.status" @update:modelValue="applyFilters()" />
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-semibold text-slate-700">Orden</label>
+                <InputText v-model.trim="filters.startOrder" inputId="startOrder" fluid @keyup.enter="applyFilters()" />
+            </div>
+            <div class="flex items-end justify-end gap-2 xl:col-span-5">
+                <Button
+                    label="Limpiar"
+                    icon="pi pi-filter-slash"
+                    severity="secondary"
+                    size="small"
+                    outlined
+                    @click="clearFilters" />
+                <Button
+                    label="Nuevo"
+                    icon="pi pi-plus"
+                    severity="success"
+                    size="small"
+                    @click="addModalVisible = true" />
+            </div>
         </div>
         <DataTable
-            :value="rallyStageSchedules"
+            :value="groupedSchedules"
             :loading="loading"
-            tableStyle="min-width: 120rem"
+            tableStyle="min-width: 108rem"
             size="small"
-            filterDisplay="row"
+            rowGroupMode="subheader"
+            groupRowsBy="categoryName"
             showGridlines
             rowHover>
             <template #empty>
                 <div class="flex h-40 items-center justify-center">No se encontraron datos.</div>
+            </template>
+            <template #groupheader="slotProps">
+                <div class="flex items-center justify-between gap-3 bg-slate-100 px-3 py-2">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">{{ slotProps.data?.categoryName }}</p>
+                        <p class="text-xs text-slate-500">Orden de partida dentro de esta categoria</p>
+                    </div>
+                    <span class="text-xs font-medium text-slate-500">
+                        {{ getCategoryCount(slotProps.data?.categoryId) }} equipos
+                    </span>
+                </div>
             </template>
             <Column header="#" style="width: 3rem; max-width: 3rem">
                 <template #body="slotProps">
                     {{ slotProps.index + 1 }}
                 </template>
             </Column>
-            <Column field="stageId" header="Etapa" :showFilterMenu="false" style="width: 18rem">
-                <template #filter>
-                    <RallyStageSelectFilter v-model.trim="filters.stageId" @update:modelValue="applyFilters()" />
-                </template>
+            <Column field="stageId" header="Etapa" style="width: 18rem">
                 <template #body="slotProps">
                     {{ formatStageLabel(slotProps.data?.stage) }}
                 </template>
             </Column>
-            <Column field="teamId" header="Equipo" :showFilterMenu="false" style="width: 22rem">
-                <template #filter>
-                    <TeamSelectFilter v-model.trim="filters.teamId" @update:modelValue="applyFilters()" />
-                </template>
+            <Column field="teamId" header="Equipo" style="width: 24rem">
                 <template #body="slotProps">
                     {{ formatTeamLabel(slotProps.data?.team) }}
                 </template>
             </Column>
-            <Column field="startOrder" header="Orden de partida" :showFilterMenu="false" style="width: 10rem">
-                <template #filter>
-                    <InputText
-                        v-model.trim="filters.startOrder"
-                        inputId="startOrder"
-                        fluid
-                        @keyup.enter="applyFilters()" />
-                </template>
+            <Column field="startOrder" header="Orden en categoria" style="width: 12rem">
                 <template #body="slotProps">
                     {{ slotProps.data?.startOrder }}
                 </template>
             </Column>
-            <Column field="scheduledStartTime" header="Hora programada" :showFilterMenu="false" style="width: 16rem">
+            <Column field="scheduledStartTime" header="Hora programada" style="width: 16rem">
                 <template #body="slotProps">
                     {{ formatDateTime(slotProps.data?.scheduledStartTime) || 'Sin definir' }}
                 </template>
             </Column>
-            <Column field="status" header="Estado" :showFilterMenu="false" style="width: 10rem">
-                <template #filter>
-                    <StatusSelectFilter v-model.trim="filters.status" @update:modelValue="applyFilters()" />
-                </template>
+            <Column field="status" header="Estado" style="width: 10rem">
                 <template #body="slotProps">
                     <StatusDisplay :status="slotProps.data?.status" />
                 </template>
             </Column>
-            <Column field="result" header="Resultado" :showFilterMenu="false" style="width: 14rem">
+            <Column field="result" header="Resultado" style="width: 14rem">
                 <template #body="slotProps">
                     <span v-if="slotProps.data?.result">Registrado</span>
                     <span v-else class="text-slate-500">Pendiente</span>
                 </template>
             </Column>
-            <Column field="eventName" header="Evento" :showFilterMenu="false" style="width: 16rem">
+            <Column field="eventName" header="Evento" style="width: 16rem">
                 <template #body="slotProps">
                     {{ slotProps.data?.stage?.rally?.calendar?.eventName }}
                 </template>
             </Column>
-            <Column field="championship" header="Campeonato" :showFilterMenu="false" style="width: 16rem">
+            <Column field="championship" header="Campeonato" style="width: 16rem">
                 <template #body="slotProps">
                     {{ formatChampionship(slotProps.data?.stage?.rally?.calendar?.championship) }}
                 </template>
             </Column>
-            <Column header="Acciones" :showFilterMenu="false" style="width: 10rem">
-                <template #filter>
-                    <Button
-                        severity="secondary"
-                        type="button"
-                        size="small"
-                        icon="pi pi-filter-slash"
-                        outlined
-                        @click="clearFilters" />
-                </template>
+            <Column header="Acciones" style="width: 10rem">
                 <template #body="slotProps">
                     <div class="flex gap-1">
                         <Button
@@ -108,7 +132,12 @@
         </DataTable>
         <PaginatorComponent :filters="filters" :meta="meta" @toPage="toPage" @applyFilters="applyFilters" />
 
-        <RallyStageScheduleAddModal v-if="addModalVisible" v-model="addModalVisible" @success="onSuccess" />
+        <RallyStageScheduleAddModal
+            v-if="addModalVisible"
+            v-model="addModalVisible"
+            :stageId="filters.stageId || null"
+            :categoryId="filters.categoryId || null"
+            @success="onSuccess" />
         <RallyStageScheduleEditModal
             v-if="editModalVisible"
             v-model="editModalVisible"
@@ -123,7 +152,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
@@ -132,9 +161,15 @@ import { useToast } from 'primevue/usetoast'
 
 import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import { useUrlFilters } from '@/shared/composables/use-url-filters'
+import CategorySelectFilter from '@/modules/category/components/CategorySelectFilter.vue'
 import RallyStageSelectFilter from '@/modules/rally-stage/components/RallyStageSelectFilter.vue'
 import TeamSelectFilter from '@/modules/team/components/TeamSelectFilter.vue'
-import { formatDateTime, formatStageLabel, formatTeamLabel } from '@/modules/rally-stage/utils/rally-stage-flow'
+import {
+    formatDateTime,
+    formatStageLabel,
+    formatTeamLabel,
+    groupSchedulesByCategory,
+} from '@/modules/rally-stage/utils/rally-stage-flow'
 
 import StatusDisplay from '../commons/StatusDisplay.vue'
 import StatusSelectFilter from '../commons/StatusSelectFilter.vue'
@@ -173,6 +208,7 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
         page: 1,
         limit: props.limit,
         stageId: '',
+        categoryId: '',
         teamId: '',
         status: '',
         startOrder: '',
@@ -182,6 +218,31 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
 
 const formatChampionship = (championship) => {
     return [championship?.name, championship?.season].filter(Boolean).join(' - ')
+}
+
+const teamFilterQuery = computed(() => {
+    if (!filters.value.stageId && !filters.value.categoryId) {
+        return {}
+    }
+
+    return {
+        ...(filters.value.stageId ? { stageId: filters.value.stageId } : {}),
+        ...(filters.value.categoryId ? { categoryId: filters.value.categoryId } : {}),
+    }
+})
+
+const groupedSchedules = computed(() => {
+    return groupSchedulesByCategory(rallyStageSchedules.value).flatMap((group) => {
+        return group.items.map((item) => ({
+            ...item,
+            categoryId: group.id,
+            categoryName: group.name,
+        }))
+    })
+})
+
+const getCategoryCount = (categoryId) => {
+    return groupedSchedules.value.filter((schedule) => schedule.categoryId === categoryId).length
 }
 
 const applyFilters = (next) => {

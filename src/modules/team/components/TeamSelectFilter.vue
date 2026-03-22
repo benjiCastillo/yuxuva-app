@@ -12,16 +12,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import Select from 'primevue/select'
 import { useToast } from 'primevue/usetoast'
 
 import { useSelectDataTeam } from '../composables/select-data-team.composable'
 
-defineProps({
+const props = defineProps({
     modelValue: {
         type: [String, Number, null],
         default: null,
+    },
+    query: {
+        type: Object,
+        default: () => ({}),
     },
 })
 
@@ -54,6 +58,14 @@ const formattedTeams = computed(() => {
 })
 
 onMounted(() => {
-    selectData()
+    selectData(props.query)
 })
+
+watch(
+    () => props.query,
+    (query) => {
+        selectData(query)
+    },
+    { deep: true }
+)
 </script>

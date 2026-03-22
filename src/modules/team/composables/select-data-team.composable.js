@@ -9,10 +9,10 @@ export const useSelectDataTeam = ({ onError } = {}) => {
         status: false,
     })
 
-    const selectData = async () => {
+    const selectData = async (query = {}) => {
         try {
             loading.value = true
-            const response = await TeamService.selectData()
+            const response = await TeamService.selectData(query)
             teams.value = response.data
         } catch (error) {
             errorState.value = {

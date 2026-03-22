@@ -6,9 +6,15 @@
             :options="formattedTeams"
             optionLabel="label"
             optionValue="id"
+            :disabled="disabled"
             fluid
             filter
-            @update:modelValue="field.onChange" />
+            @update:modelValue="
+                (value) => {
+                    field.onChange(value)
+                    emit('update:modelValue', value)
+                }
+            " />
         <small v-if="errors.length" class="text-red-500">
             {{ errors[0] }}
         </small>
@@ -16,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { Field } from 'vee-validate'
 import Select from 'primevue/select'
 import { useToast } from 'primevue/usetoast'
@@ -36,7 +42,17 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    query: {
+        type: Object,
+        default: () => ({}),
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 })
+
+const emit = defineEmits(['update:modelValue'])
 
 const toast = useToast()
 
@@ -73,6 +89,23 @@ const formattedTeams = computed(() => {
 })
 
 onMounted(() => {
-    selectData()
+    selectData(props.query)
 })
+
+watch(
+    () => props.query,
+    (query) => {
+        selectData(query)
+    },
+    { deep: true }
+)
+
+watch(
+    () => props.disabled,
+    (disabled) => {
+        if (disabled) {
+            selectData({})
+        }
+    }
+)
 </script>

@@ -2,6 +2,10 @@ export const formatStageLabel = (stage) => {
     return [stage?.stageOrder ? `ET ${stage.stageOrder}` : null, stage?.name].filter(Boolean).join(' - ')
 }
 
+export const formatCategoryLabel = (category) => {
+    return [category?.name, category?.modality].filter(Boolean).join(' - ')
+}
+
 export const formatTeamLabel = (team) => {
     return [
         team?.competitionNo ? `#${team.competitionNo}` : null,
@@ -19,6 +23,42 @@ export const formatStageEventLabel = (stage) => {
     ]
         .filter(Boolean)
         .join(' - ')
+}
+
+export const groupSchedulesByCategory = (schedules = []) => {
+    const groups = new Map()
+
+    schedules.forEach((schedule) => {
+        const categoryId = schedule?.category?.id ?? schedule?.categoryId ?? 'no-category'
+        const categoryName = schedule?.category?.name ?? 'Sin categoria'
+        const key = `${categoryId}`
+
+        if (!groups.has(key)) {
+            groups.set(key, {
+                id: categoryId,
+                name: categoryName,
+                category: schedule?.category ?? null,
+                items: [],
+            })
+        }
+
+        groups.get(key).items.push(schedule)
+    })
+
+    return Array.from(groups.values())
+        .map((group) => ({
+            ...group,
+            items: [...group.items].sort((left, right) => {
+                const orderDifference = Number(left?.startOrder ?? 0) - Number(right?.startOrder ?? 0)
+
+                if (orderDifference !== 0) {
+                    return orderDifference
+                }
+
+                return String(left?.team?.competitionNo ?? '').localeCompare(String(right?.team?.competitionNo ?? ''))
+            }),
+        }))
+        .sort((left, right) => left.name.localeCompare(right.name))
 }
 
 export const formatDateTime = (value) => {

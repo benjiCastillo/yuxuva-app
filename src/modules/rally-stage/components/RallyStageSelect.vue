@@ -8,7 +8,12 @@
             optionValue="id"
             fluid
             filter
-            @update:modelValue="field.onChange" />
+            @update:modelValue="
+                (value) => {
+                    field.onChange(value)
+                    emit('update:modelValue', value)
+                }
+            " />
         <small v-if="errors.length" class="text-red-500">
             {{ errors[0] }}
         </small>
@@ -37,6 +42,8 @@ const props = defineProps({
         default: '',
     },
 })
+
+const emit = defineEmits(['update:modelValue'])
 
 const toast = useToast()
 

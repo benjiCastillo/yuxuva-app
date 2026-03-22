@@ -37,6 +37,11 @@
                             {{ formatTeamLabel(slotProps.data?.team) }}
                         </template>
                     </Column>
+                    <Column field="categoryId" header="Categoria" style="width: 12rem">
+                        <template #body="slotProps">
+                            {{ formatCategoryLabel(slotProps.data?.category) || '-' }}
+                        </template>
+                    </Column>
                     <Column field="scheduledStartTime" header="Hora programada" style="width: 14rem">
                         <template #body="slotProps">
                             {{ formatDateTime(slotProps.data?.scheduledStartTime) || 'Sin definir' }}
@@ -118,6 +123,11 @@
                     <Column field="teamId" header="Equipo" style="width: 18rem">
                         <template #body="slotProps">
                             {{ formatTeamLabel(slotProps.data?.schedule?.team) }}
+                        </template>
+                    </Column>
+                    <Column field="categoryId" header="Categoria" style="width: 12rem">
+                        <template #body="slotProps">
+                            {{ formatCategoryLabel(slotProps.data?.schedule?.category) || '-' }}
                         </template>
                     </Column>
                     <Column field="startTime" header="Salida real" style="width: 14rem">
@@ -217,6 +227,7 @@ import DataTable from 'primevue/datatable'
 import { useToast } from 'primevue/usetoast'
 
 import {
+    formatCategoryLabel,
     formatDateTime,
     formatDuration,
     formatFinalTime,
