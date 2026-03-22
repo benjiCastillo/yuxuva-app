@@ -3,7 +3,7 @@
         <label :for="fieldName" :class="className">{{ title }}</label>
         <Select
             :modelValue="field.value"
-            :options="formattedResults"
+            :options="formattedSchedules"
             optionLabel="label"
             optionValue="id"
             fluid
@@ -23,7 +23,7 @@ import { useToast } from 'primevue/usetoast'
 
 import { formatStageEventLabel, formatStageLabel, formatTeamLabel } from '@/modules/rally-stage/utils/rally-stage-flow'
 
-import { useSelectDataRallyStageResult } from '../composables/select-data-rally-stage-result.composable'
+import { useSelectDataRallyStageSchedule } from '../composables/select-data-rally-stage-schedule.composable'
 
 const props = defineProps({
     fieldName: {
@@ -38,6 +38,10 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    query: {
+        type: Object,
+        default: () => ({}),
+    },
 })
 
 const toast = useToast()
@@ -50,7 +54,7 @@ const className = computed(() => {
     return ['block truncate-1 font-bold mb-1', isRequired.value ? 'required' : '']
 })
 
-const { rallyStageResults, selectData } = useSelectDataRallyStageResult({
+const { rallyStageSchedules, selectData } = useSelectDataRallyStageSchedule({
     onError: (title, error) => {
         toast.add({
             severity: 'error',
@@ -61,14 +65,14 @@ const { rallyStageResults, selectData } = useSelectDataRallyStageResult({
     },
 })
 
-const formattedResults = computed(() => {
-    return rallyStageResults.value.map((result) => ({
-        ...result,
+const formattedSchedules = computed(() => {
+    return rallyStageSchedules.value.map((schedule) => ({
+        ...schedule,
         label: [
-            formatStageLabel(result.schedule?.stage),
-            formatTeamLabel(result.schedule?.team),
-            result.schedule?.startOrder ? `Orden ${result.schedule.startOrder}` : null,
-            formatStageEventLabel(result.schedule?.stage),
+            formatStageLabel(schedule.stage),
+            formatTeamLabel(schedule.team),
+            schedule.startOrder ? `Orden ${schedule.startOrder}` : null,
+            formatStageEventLabel(schedule.stage),
         ]
             .filter(Boolean)
             .join(' - '),
@@ -76,6 +80,6 @@ const formattedResults = computed(() => {
 })
 
 onMounted(() => {
-    selectData()
+    selectData(props.query)
 })
 </script>

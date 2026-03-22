@@ -1,6 +1,9 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Editar etapa del rally" class="w-full md:w-2/3 lg:w-1/2 m-2">
-        <RallyStageEditForm v-if="rallyStage?.id" :rallyStage="rallyStage" @updated="onUpdated" @close="closeModal" />
+    <Dialog v-model:visible="visible" modal header="Editar etapa del rally" class="w-full xl:w-11/12 m-2">
+        <div v-if="rallyStage?.id" class="space-y-6">
+            <RallyStageEditForm :rallyStage="rallyStage" @updated="onUpdated" @close="closeModal" />
+            <RallyStageFlowPanel :stageId="rallyStage.id" />
+        </div>
 
         <section v-if="loading && !rallyStage" class="flex flex-row items-center align-center h-[20vh]">
             <ProgressSpinner
@@ -21,6 +24,7 @@ import { useToast } from 'primevue/usetoast'
 
 import { useGetRallyStage } from '../../composables/get-rally-stage.composable'
 import RallyStageEditForm from './RallyStageEditForm.vue'
+import RallyStageFlowPanel from './RallyStageFlowPanel.vue'
 
 const toast = useToast()
 

@@ -25,7 +25,10 @@ defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const statuses = ref([
-    { name: 'ACTIVO', value: 'ACTIVE' },
-    { name: 'INACTIVO', value: 'INACTIVE' },
+    { name: 'PROGRAMADO', value: 'SCHEDULED' },
+    { name: 'CONFIRMADO', value: 'CONFIRMED' },
+    { name: 'CANCELADO', value: 'CANCELLED' },
+    { name: 'EN CURSO', value: 'STARTED' },
+    { name: 'FINALIZADO', value: 'FINISHED' },
 ])
 </script>

@@ -1,6 +1,6 @@
 <template>
     <aside
-        class="fixed inset-y-0 left-0 z-30 flex w-72 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl transition-[width,transform,opacity] duration-300 ease-out lg:relative lg:z-10 lg:shadow-none"
+        class="fixed inset-y-0 left-0 z-30 flex w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl transition-[width,transform,opacity] duration-300 ease-out lg:relative lg:z-10 lg:shadow-none"
         :class="[
             isMobile
                 ? isOpen

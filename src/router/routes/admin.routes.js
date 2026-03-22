@@ -3,7 +3,6 @@ import DashboardPage from '@/modules/admin/pages/DashboardPage.vue'
 import ProfilePage from '@/modules/admin/pages/ProfilePage.vue'
 import UsersPage from '@/modules/admin/pages/UsersPage.vue'
 
-import { carRoutes } from './car.routes'
 import { categoryRoutes } from './category.routes'
 import { championshipCalendarRoutes } from './championship-calendar.routes'
 import { championshipRoutes } from './championship.routes'
@@ -12,6 +11,7 @@ import { driverRoutes } from './driver.routes'
 import { rallyRoutes } from './rally.routes'
 import { rallyStageRoutes } from './rally-stage.routes'
 import { rallyStageResultRoutes } from './rally-stage-result.routes'
+import { rallyStageScheduleRoutes } from './rally-stage-schedule.routes'
 import { teamRoutes } from './team.routes'
 
 export const adminRoutes = [
@@ -51,7 +51,6 @@ export const adminRoutes = [
                     breadcrumb: 'Perfil',
                 },
             },
-            ...carRoutes,
             ...categoryRoutes,
             ...championshipCalendarRoutes,
             ...championshipRoutes,
@@ -59,6 +58,7 @@ export const adminRoutes = [
             ...driverRoutes,
             ...rallyRoutes,
             ...rallyStageRoutes,
+            ...rallyStageScheduleRoutes,
             ...rallyStageResultRoutes,
             ...teamRoutes,
         ],

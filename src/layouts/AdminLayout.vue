@@ -25,7 +25,7 @@
                     @click="closeSidebar" />
             </Transition>
 
-            <main class="relative z-10 flex-1 p-4 transition-all duration-300 sm:p-6">
+            <main class="relative z-10 min-w-0 flex-1 p-4 transition-all duration-300 sm:p-6">
                 <div class="flex min-h-full flex-col gap-6">
                     <div class="flex-1">
                         <RouterView />
@@ -53,12 +53,6 @@ const authStore = useAuthStore()
 const menuConfig = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', roles: ['admin', 'manager', 'viewer'] },
     { label: 'Users', icon: 'pi pi-users', route: '/users', roles: ['admin', 'manager'] },
-    {
-        label: 'Autos',
-        icon: 'pi pi-car',
-        route: '/cars',
-        roles: ['admin', 'manager', 'viewer'],
-    },
     {
         label: 'Pilotos',
         icon: 'pi pi-user',
@@ -93,6 +87,12 @@ const menuConfig = [
         label: 'Etapas Rally',
         icon: 'pi pi-list',
         route: '/rally-stages',
+        roles: ['admin', 'manager', 'viewer'],
+    },
+    {
+        label: 'Programacion Etapas',
+        icon: 'pi pi-sort-numeric-down',
+        route: '/rally-stage-schedules',
         roles: ['admin', 'manager', 'viewer'],
     },
     {

@@ -7,20 +7,20 @@
             <InputTextCommon type="text" fieldName="lastName" title="Apellidos" rules="required|max:100" />
         </div>
         <div class="col-span-12 md:col-span-4">
-            <DocumentTypeSelect fieldName="documentType" title="Tipo de documento" rules="required" />
+            <DocumentTypeSelect fieldName="documentType" title="Tipo de documento" rules="" />
         </div>
         <div class="col-span-12 md:col-span-4">
-            <InputTextCommon type="text" fieldName="documentNumber" title="Nro. documento" rules="required|max:30" />
+            <InputTextCommon type="text" fieldName="documentNumber" title="Nro. documento" rules="max:30" />
         </div>
         <div class="col-span-12 md:col-span-4">
-            <InputTextCommon type="text" fieldName="licenseNumber" title="Nro. licencia" rules="required|max:60" />
+            <InputTextCommon type="text" fieldName="licenseNumber" title="Nro. licencia" rules="max:60" />
         </div>
         <div class="col-span-12 md:col-span-4">
             <InputTextCommon type="text" fieldName="nationality" title="Nacionalidad" rules="required|max:80" />
         </div>
         <div class="col-span-12 md:col-span-4">
-            <Field v-slot="{ field, errors }" name="birthDate" rules="required">
-                <label for="birthDate" class="block truncate-1 font-bold mb-1 required">Fecha de nacimiento</label>
+            <Field v-slot="{ field, errors }" name="birthDate" rules="">
+                <label for="birthDate" class="block truncate-1 font-bold mb-1">Fecha de nacimiento</label>
                 <DatePicker
                     inputId="birthDate"
                     :modelValue="field.value"
@@ -34,13 +34,13 @@
             </Field>
         </div>
         <div class="col-span-12 md:col-span-4">
-            <InputTextCommon type="text" fieldName="phone" title="Telefono" rules="required|max:30" />
+            <InputTextCommon type="text" fieldName="phone" title="Telefono" rules="max:30" />
         </div>
         <div class="col-span-12 md:col-span-6">
-            <InputTextCommon type="email" fieldName="email" title="Correo" rules="required|max:120" />
+            <InputTextCommon type="email" fieldName="email" title="Correo" rules="max:120" />
         </div>
         <div class="col-span-12 md:col-span-3">
-            <BloodTypeSelect fieldName="bloodType" title="Grupo sanguineo" rules="required" />
+            <BloodTypeSelect fieldName="bloodType" title="Grupo sanguineo" rules="" />
         </div>
         <div class="col-span-12 md:col-span-3">
             <StatusSelect fieldName="status" title="Estado" rules="required" />

@@ -1,7 +1,7 @@
 <template>
     <Select
         :modelValue="modelValue"
-        :options="formattedResults"
+        :options="formattedSchedules"
         optionLabel="label"
         optionValue="id"
         fluid
@@ -18,12 +18,16 @@ import { useToast } from 'primevue/usetoast'
 
 import { formatStageEventLabel, formatStageLabel, formatTeamLabel } from '@/modules/rally-stage/utils/rally-stage-flow'
 
-import { useSelectDataRallyStageResult } from '../composables/select-data-rally-stage-result.composable'
+import { useSelectDataRallyStageSchedule } from '../composables/select-data-rally-stage-schedule.composable'
 
-defineProps({
+const props = defineProps({
     modelValue: {
         type: [String, Number, null],
         default: null,
+    },
+    query: {
+        type: Object,
+        default: () => ({}),
     },
 })
 
@@ -31,7 +35,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const toast = useToast()
 
-const { rallyStageResults, selectData } = useSelectDataRallyStageResult({
+const { rallyStageSchedules, selectData } = useSelectDataRallyStageSchedule({
     onError: (title, error) => {
         toast.add({
             severity: 'error',
@@ -42,14 +46,14 @@ const { rallyStageResults, selectData } = useSelectDataRallyStageResult({
     },
 })
 
-const formattedResults = computed(() => {
-    return rallyStageResults.value.map((result) => ({
-        ...result,
+const formattedSchedules = computed(() => {
+    return rallyStageSchedules.value.map((schedule) => ({
+        ...schedule,
         label: [
-            formatStageLabel(result.schedule?.stage),
-            formatTeamLabel(result.schedule?.team),
-            result.schedule?.startOrder ? `Orden ${result.schedule.startOrder}` : null,
-            formatStageEventLabel(result.schedule?.stage),
+            formatStageLabel(schedule.stage),
+            formatTeamLabel(schedule.team),
+            schedule.startOrder ? `Orden ${schedule.startOrder}` : null,
+            formatStageEventLabel(schedule.stage),
         ]
             .filter(Boolean)
             .join(' - '),
@@ -57,6 +61,6 @@ const formattedResults = computed(() => {
 })
 
 onMounted(() => {
-    selectData()
+    selectData(props.query)
 })
 </script>

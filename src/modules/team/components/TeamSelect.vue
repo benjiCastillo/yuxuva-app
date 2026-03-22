@@ -65,7 +65,7 @@ const formattedTeams = computed(() => {
         label: [
             team.competitionNo ? `#${team.competitionNo}` : null,
             [team.driver?.firstName, team.driver?.lastName].filter(Boolean).join(' '),
-            [team.car?.brand, team.car?.model, team.car?.year].filter(Boolean).join(' '),
+            [team.carBrand, team.carModel, team.carYear].filter(Boolean).join(' '),
         ]
             .filter(Boolean)
             .join(' - '),

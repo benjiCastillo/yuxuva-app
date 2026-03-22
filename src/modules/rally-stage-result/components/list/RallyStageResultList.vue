@@ -6,7 +6,7 @@
         <DataTable
             :value="rallyStageResults"
             :loading="loading"
-            tableStyle="min-width: 110rem"
+            tableStyle="min-width: 128rem"
             size="small"
             filterDisplay="row"
             showGridlines
@@ -24,7 +24,7 @@
                     <RallyStageSelectFilter v-model.trim="filters.stageId" @update:modelValue="applyFilters()" />
                 </template>
                 <template #body="slotProps">
-                    {{ formatStage(slotProps.data?.stage) }}
+                    {{ formatStageLabel(slotProps.data?.schedule?.stage) }}
                 </template>
             </Column>
             <Column field="teamId" header="Equipo" :showFilterMenu="false" style="width: 16rem">
@@ -32,7 +32,22 @@
                     <TeamSelectFilter v-model.trim="filters.teamId" @update:modelValue="applyFilters()" />
                 </template>
                 <template #body="slotProps">
-                    {{ formatTeam(slotProps.data?.team) }}
+                    {{ formatTeamLabel(slotProps.data?.schedule?.team) }}
+                </template>
+            </Column>
+            <Column field="scheduleId" header="Programacion" :showFilterMenu="false" style="width: 14rem">
+                <template #filter>
+                    <RallyStageScheduleSelectFilter
+                        v-model.trim="filters.scheduleId"
+                        @update:modelValue="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    <div class="flex flex-col">
+                        <span>Orden {{ slotProps.data?.schedule?.startOrder ?? '-' }}</span>
+                        <small class="text-slate-500">
+                            {{ formatDateTime(slotProps.data?.schedule?.scheduledStartTime) || 'Sin hora programada' }}
+                        </small>
+                    </div>
                 </template>
             </Column>
             <Column field="startTime" header="Salida" :showFilterMenu="false" style="width: 14rem">
@@ -55,6 +70,11 @@
                     {{ formatDuration(slotProps.data?.penalty) }}
                 </template>
             </Column>
+            <Column field="finalTime" header="Tiempo final" :showFilterMenu="false" style="width: 10rem">
+                <template #body="slotProps">
+                    {{ formatFinalTime(slotProps.data?.time, slotProps.data?.penalty) }}
+                </template>
+            </Column>
             <Column field="status" header="Estado" :showFilterMenu="false" style="width: 10rem">
                 <template #filter>
                     <StatusSelectFilter v-model.trim="filters.status" @update:modelValue="applyFilters()" />
@@ -65,7 +85,7 @@
             </Column>
             <Column field="eventName" header="Evento" :showFilterMenu="false" style="width: 18rem">
                 <template #body="slotProps">
-                    {{ slotProps.data?.stage?.rally?.calendar?.eventName }}
+                    {{ slotProps.data?.schedule?.stage?.rally?.calendar?.eventName }}
                 </template>
             </Column>
             <Column header="Acciones" :showFilterMenu="false" style="width: 10rem">
@@ -125,6 +145,14 @@ import PaginatorComponent from '@/shared/components/PaginatorComponent.vue'
 import { useUrlFilters } from '@/shared/composables/use-url-filters'
 import RallyStageSelectFilter from '@/modules/rally-stage/components/RallyStageSelectFilter.vue'
 import TeamSelectFilter from '@/modules/team/components/TeamSelectFilter.vue'
+import RallyStageScheduleSelectFilter from '@/modules/rally-stage-schedule/components/RallyStageScheduleSelectFilter.vue'
+import {
+    formatDateTime,
+    formatDuration,
+    formatFinalTime,
+    formatStageLabel,
+    formatTeamLabel,
+} from '@/modules/rally-stage/utils/rally-stage-flow'
 
 import StatusDisplay from '../commons/StatusDisplay.vue'
 import StatusSelectFilter from '../commons/StatusSelectFilter.vue'
@@ -162,53 +190,13 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
     {
         page: 1,
         limit: props.limit,
+        scheduleId: '',
         stageId: '',
         teamId: '',
         status: '',
     },
     true
 )
-
-const formatStage = (stage) => {
-    return [stage?.stageOrder ? `ET ${stage.stageOrder}` : null, stage?.name].filter(Boolean).join(' - ')
-}
-
-const formatTeam = (team) => {
-    return [
-        team?.competitionNo ? `#${team.competitionNo}` : null,
-        [team?.driver?.firstName, team?.driver?.lastName].filter(Boolean).join(' '),
-    ]
-        .filter(Boolean)
-        .join(' - ')
-}
-
-const formatDateTime = (value) => {
-    if (!value) {
-        return ''
-    }
-
-    return new Intl.DateTimeFormat('es-BO', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-    }).format(new Date(value))
-}
-
-const formatDuration = (milliseconds) => {
-    if (milliseconds === null || milliseconds === undefined) {
-        return ''
-    }
-
-    const totalSeconds = Math.floor(milliseconds / 1000)
-    const minutes = Math.floor(totalSeconds / 60)
-    const seconds = totalSeconds % 60
-    const ms = milliseconds % 1000
-
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(3, '0')}`
-}
 
 const applyFilters = (next) => {
     updateFilters(next)

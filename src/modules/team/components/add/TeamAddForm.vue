@@ -7,7 +7,7 @@
             <CategorySelect fieldName="categoryId" title="Categoria" rules="required" />
         </div>
         <div class="col-span-12 md:col-span-6">
-            <CarSelect fieldName="carId" title="Auto" rules="required" />
+            <InputTextCommon type="text" fieldName="carBrand" title="Marca del auto" rules="required|max:120" />
         </div>
         <div class="col-span-12 md:col-span-6">
             <InputTextCommon
@@ -15,6 +15,12 @@
                 fieldName="competitionNo"
                 title="Nro. de competicion"
                 rules="required|numeric" />
+        </div>
+        <div class="col-span-12 md:col-span-6">
+            <InputTextCommon type="text" fieldName="carModel" title="Modelo del auto" rules="max:120" />
+        </div>
+        <div class="col-span-12 md:col-span-6">
+            <InputTextCommon type="number" fieldName="carYear" title="Año del auto" rules="numeric" />
         </div>
         <div class="col-span-12 md:col-span-6">
             <DriverSelect fieldName="driverId" title="Piloto" rules="required" />
@@ -49,7 +55,6 @@ import { applyApiErrors } from '@/shared/utils/apply-api-errors'
 import InputTextCommon from '@/shared/components/form-common/InputTextCommon.vue'
 import ChampionshipSelect from '@/modules/championship/components/ChampionshipSelect.vue'
 import CategorySelect from '@/modules/category/components/CategorySelect.vue'
-import CarSelect from '@/modules/car/components/CarSelect.vue'
 import DriverSelect from '@/modules/driver/components/DriverSelect.vue'
 
 import StatusSelect from '../commons/StatusSelect.vue'
@@ -64,7 +69,9 @@ setupValidation()
 const teamForm = ref({
     championshipId: null,
     categoryId: null,
-    carId: null,
+    carBrand: null,
+    carModel: null,
+    carYear: null,
     driverId: null,
     codriverId: null,
     competitionNo: null,
@@ -85,6 +92,8 @@ const { team, createTeam, loading, errorState } = useCreateTeam({
 const serializeValues = (values) => ({
     ...values,
     codriverId: values.codriverId || null,
+    carModel: values.carModel || null,
+    carYear: values.carYear ? Number(values.carYear) : null,
     competitionNo: Number(values.competitionNo),
 })
 

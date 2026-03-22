@@ -1,6 +1,6 @@
 <template>
     <Dialog v-model:visible="visible" modal header="Agregar resultado de etapa" class="w-full md:w-2/3 lg:w-1/2 m-2">
-        <RallyStageResultAddForm @created="onCreated" @close="closeModal" />
+        <RallyStageResultAddForm :scheduleId="scheduleId" :stageId="stageId" @created="onCreated" @close="closeModal" />
     </Dialog>
 </template>
 
@@ -14,6 +14,14 @@ const props = defineProps({
     modelValue: {
         type: Boolean,
         default: false,
+    },
+    scheduleId: {
+        type: String,
+        default: null,
+    },
+    stageId: {
+        type: String,
+        default: null,
     },
 })
 

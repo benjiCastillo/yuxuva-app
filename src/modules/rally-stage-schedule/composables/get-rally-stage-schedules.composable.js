@@ -1,12 +1,12 @@
 import { ref } from 'vue'
-import CarService from '../services/car.service'
+import RallyStageScheduleService from '../services/rally-stage-schedule.service'
 
-export const useGetCars = ({ onError } = {}) => {
-    const cars = ref([])
+export const useGetRallyStageSchedules = ({ onError } = {}) => {
+    const rallyStageSchedules = ref([])
     const meta = ref({
         total: 0,
         page: 0,
-        pageCount: 0,
+        totalPages: 0,
     })
     const loading = ref(false)
     const errorState = ref({
@@ -17,17 +17,17 @@ export const useGetCars = ({ onError } = {}) => {
     const get = async (query = {}) => {
         try {
             loading.value = true
-            const response = await CarService.get(query)
-            cars.value = response.data.data
+            const response = await RallyStageScheduleService.get(query)
+            rallyStageSchedules.value = response.data.data
             meta.value.total = response.data.meta.total
             meta.value.page = response.data.meta.page
             meta.value.totalPages = response.data.meta.totalPages
         } catch (error) {
             errorState.value = {
-                message: error.response.data.message || 'Ocurrió un error al obtener los autos',
+                message: error.response.data.message || 'Ocurrio un error al obtener las programaciones de etapas',
                 status: error.response.status,
             }
-            cars.value = []
+            rallyStageSchedules.value = []
             onError(error.response.data.error || 'Error', errorState.value)
         } finally {
             loading.value = false
@@ -35,7 +35,7 @@ export const useGetCars = ({ onError } = {}) => {
     }
 
     return {
-        cars,
+        rallyStageSchedules,
         meta,
         loading,
         errorState,

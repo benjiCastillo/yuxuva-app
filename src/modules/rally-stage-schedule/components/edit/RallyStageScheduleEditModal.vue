@@ -1,8 +1,12 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Editar auto" class="w-full md:w-2/3 lg:w-1/2 m-2">
-        <CarEditForm v-if="car?.id" :car="car" @updated="onUpdated" @close="closeModal" />
+    <Dialog v-model:visible="visible" modal header="Editar programacion de etapa" class="w-full md:w-2/3 lg:w-1/2 m-2">
+        <RallyStageScheduleEditForm
+            v-if="rallyStageSchedule?.id"
+            :rallyStageSchedule="rallyStageSchedule"
+            @updated="onUpdated"
+            @close="closeModal" />
 
-        <section v-if="loading && !car" class="flex flex-row items-center align-center h-[20vh]">
+        <section v-if="loading && !rallyStageSchedule" class="flex flex-row items-center align-center h-[20vh]">
             <ProgressSpinner
                 style="width: 50px; height: 50px"
                 strokeWidth="4"
@@ -12,14 +16,15 @@
         </section>
     </Dialog>
 </template>
+
 <script setup>
 import { computed, onMounted } from 'vue'
 import Dialog from 'primevue/dialog'
 import ProgressSpinner from 'primevue/progressspinner'
 import { useToast } from 'primevue/usetoast'
 
-import { useGetCar } from '../../composables/get-car.composable'
-import CarEditForm from './CarEditForm.vue'
+import { useGetRallyStageSchedule } from '../../composables/get-rally-stage-schedule.composable'
+import RallyStageScheduleEditForm from './RallyStageScheduleEditForm.vue'
 
 const toast = useToast()
 
@@ -28,7 +33,7 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    carId: {
+    rallyStageScheduleId: {
         type: String,
         default: null,
     },
@@ -41,7 +46,7 @@ const visible = computed({
     set: (value) => emit('update:modelValue', value),
 })
 
-const { findOne, car, loading } = useGetCar({
+const { findOne, rallyStageSchedule, loading } = useGetRallyStageSchedule({
     onError: (title, error) => {
         toast.add({
             severity: 'error',
@@ -62,6 +67,6 @@ const onUpdated = () => {
 }
 
 onMounted(() => {
-    findOne(props.carId)
+    findOne(props.rallyStageScheduleId)
 })
 </script>

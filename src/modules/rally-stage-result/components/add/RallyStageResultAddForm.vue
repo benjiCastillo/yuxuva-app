@@ -1,10 +1,11 @@
 <template>
     <Form :initial-values="rallyStageResultForm" class="grid grid-cols-12 gap-2 w-full" @submit="onSubmit">
-        <div class="col-span-12 md:col-span-6">
-            <RallyStageSelect fieldName="stageId" title="Etapa" rules="required" />
-        </div>
-        <div class="col-span-12 md:col-span-6">
-            <TeamSelect fieldName="teamId" title="Equipo" rules="required" />
+        <div class="col-span-12">
+            <RallyStageScheduleSelect
+                fieldName="scheduleId"
+                title="Programacion"
+                rules="required"
+                :query="scheduleQuery" />
         </div>
         <div class="col-span-12 md:col-span-4">
             <Field v-slot="{ field, errors }" name="startTime" rules="required">
@@ -82,8 +83,9 @@ import { useToast } from 'primevue/usetoast'
 import { setupValidation } from '@/shared/utils/setup-validation'
 import { applyApiErrors } from '@/shared/utils/apply-api-errors'
 import InputTextCommon from '@/shared/components/form-common/InputTextCommon.vue'
-import RallyStageSelect from '@/modules/rally-stage/components/RallyStageSelect.vue'
-import TeamSelect from '@/modules/team/components/TeamSelect.vue'
+import { combineDateTimeMs, convertPenaltyToMilliseconds } from '@/modules/rally-stage/utils/rally-stage-flow'
+
+import RallyStageScheduleSelect from '@/modules/rally-stage-schedule/components/RallyStageScheduleSelect.vue'
 
 import PenaltyUnitSelect from '../commons/PenaltyUnitSelect.vue'
 import StatusSelect from '../commons/StatusSelect.vue'
@@ -91,50 +93,23 @@ import { useCreateRallyStageResult } from '../../composables/create-rally-stage-
 
 const emit = defineEmits(['created', 'close'])
 
+const props = defineProps({
+    scheduleId: {
+        type: String,
+        default: null,
+    },
+    stageId: {
+        type: String,
+        default: null,
+    },
+})
+
 const toast = useToast()
 
 setupValidation()
 
-const combineDateTimeMs = (value, milliseconds) => {
-    if (!(value instanceof Date)) {
-        return null
-    }
-
-    const parsedMs = Number(String(milliseconds ?? '').padStart(3, '0'))
-    if (Number.isNaN(parsedMs) || parsedMs < 0 || parsedMs > 999) {
-        return null
-    }
-
-    const nextDate = new Date(value)
-    nextDate.setMilliseconds(parsedMs)
-    return nextDate
-}
-
-const convertPenaltyToMilliseconds = (value, unit) => {
-    const numericValue = Number(value)
-
-    if (Number.isNaN(numericValue) || numericValue < 0) {
-        return null
-    }
-
-    const factors = {
-        ms: 1,
-        s: 1000,
-        m: 60000,
-    }
-
-    const factor = factors[unit]
-
-    if (!factor) {
-        return null
-    }
-
-    return Math.round(numericValue * factor)
-}
-
 const rallyStageResultForm = ref({
-    stageId: null,
-    teamId: null,
+    scheduleId: props.scheduleId,
     startTime: null,
     endTime: null,
     startTimeMs: '000',
@@ -143,6 +118,10 @@ const rallyStageResultForm = ref({
     penaltyUnit: 'ms',
     status: 'OK',
 })
+
+const scheduleQuery = {
+    ...(props.stageId ? { stageId: props.stageId } : {}),
+}
 
 const { rallyStageResult, createRallyStageResult, loading, errorState } = useCreateRallyStageResult({
     onError: (title, error) => {
@@ -156,8 +135,7 @@ const { rallyStageResult, createRallyStageResult, loading, errorState } = useCre
 })
 
 const serializeValues = (values) => ({
-    stageId: values.stageId,
-    teamId: values.teamId,
+    scheduleId: values.scheduleId,
     startTime: combineDateTimeMs(values.startTime, values.startTimeMs)?.toISOString() ?? values.startTime,
     endTime: combineDateTimeMs(values.endTime, values.endTimeMs)?.toISOString() ?? values.endTime,
     penalty: convertPenaltyToMilliseconds(values.penaltyValue, values.penaltyUnit),

@@ -1,18 +1,23 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Agregar auto" class="w-full md:w-2/3 lg:w-1/2 m-2">
-        <CarAddForm @created="onCreated" @close="closeModal" />
+    <Dialog v-model:visible="visible" modal header="Agregar programacion de etapa" class="w-full md:w-2/3 lg:w-1/2 m-2">
+        <RallyStageScheduleAddForm :stageId="stageId" @created="onCreated" @close="closeModal" />
     </Dialog>
 </template>
+
 <script setup>
 import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
 
-import CarAddForm from './CarAddForm.vue'
+import RallyStageScheduleAddForm from './RallyStageScheduleAddForm.vue'
 
 const props = defineProps({
     modelValue: {
         type: Boolean,
         default: false,
+    },
+    stageId: {
+        type: String,
+        default: null,
     },
 })
 

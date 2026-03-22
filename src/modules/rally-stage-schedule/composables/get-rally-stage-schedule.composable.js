@@ -1,8 +1,8 @@
 import { ref } from 'vue'
-import CarService from '../services/car.service'
+import RallyStageScheduleService from '../services/rally-stage-schedule.service'
 
-export const useGetCar = ({ onError } = {}) => {
-    const car = ref(null)
+export const useGetRallyStageSchedule = ({ onError } = {}) => {
+    const rallyStageSchedule = ref(null)
     const loading = ref(false)
     const errorState = ref({
         message: '',
@@ -12,14 +12,14 @@ export const useGetCar = ({ onError } = {}) => {
     const findOne = async (id) => {
         try {
             loading.value = true
-            const response = await CarService.findOne(id)
-            car.value = response.data
+            const response = await RallyStageScheduleService.findOne(id)
+            rallyStageSchedule.value = response.data
         } catch (error) {
             errorState.value = {
-                message: error.response.data.message || 'Ocurrió un error al obtener el auto',
+                message: error.response.data.message || 'Ocurrio un error al obtener la programacion de etapa',
                 status: error.response.status,
             }
-            car.value = null
+            rallyStageSchedule.value = null
             onError(error.response.data.error || 'Error', errorState.value)
         } finally {
             loading.value = false
@@ -27,7 +27,7 @@ export const useGetCar = ({ onError } = {}) => {
     }
 
     return {
-        car,
+        rallyStageSchedule,
         loading,
         errorState,
         findOne,

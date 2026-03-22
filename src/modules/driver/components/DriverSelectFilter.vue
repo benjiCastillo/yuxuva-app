@@ -43,7 +43,7 @@ const { drivers, selectData } = useSelectDataDriver({
 const formattedDrivers = computed(() => {
     return drivers.value.map((driver) => ({
         ...driver,
-        label: [driver.firstName, driver.lastName, driver.documentNumber].filter(Boolean).join(' - '),
+        label: [driver.firstName, driver.lastName].filter(Boolean).join(' '),
     }))
 })
 

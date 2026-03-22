@@ -13,8 +13,11 @@ const props = defineProps({
 })
 
 const labels = {
-    ACTIVE: 'ACTIVO',
-    INACTIVE: 'INACTIVO',
+    SCHEDULED: 'PROGRAMADO',
+    CONFIRMED: 'CONFIRMADO',
+    CANCELLED: 'CANCELADO',
+    STARTED: 'EN CURSO',
+    FINISHED: 'FINALIZADO',
 }
 
 const statusLabel = computed(() => {

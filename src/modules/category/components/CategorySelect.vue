@@ -3,8 +3,8 @@
         <label :for="fieldName" :class="className">{{ title }}</label>
         <Select
             :modelValue="field.value"
-            :options="categories"
-            optionLabel="name"
+            :options="formattedCategories"
+            optionLabel="label"
             optionValue="id"
             fluid
             filter
@@ -56,6 +56,13 @@ const { categories, selectData } = useSelectDataCategory({
             life: 3000,
         })
     },
+})
+
+const formattedCategories = computed(() => {
+    return categories.value.map((category) => ({
+        ...category,
+        label: [category.name, category.modality].filter(Boolean).join(' - '),
+    }))
 })
 
 onMounted(() => {

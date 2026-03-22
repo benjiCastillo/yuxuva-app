@@ -4,11 +4,8 @@
         :initial-values="rallyStageResultForm"
         class="grid grid-cols-12 gap-2 w-full"
         @submit="onSubmit">
-        <div class="col-span-12 md:col-span-6">
-            <RallyStageSelect fieldName="stageId" title="Etapa" rules="required" />
-        </div>
-        <div class="col-span-12 md:col-span-6">
-            <TeamSelect fieldName="teamId" title="Equipo" rules="required" />
+        <div class="col-span-12">
+            <RallyStageScheduleSelect fieldName="scheduleId" title="Programacion" rules="required" />
         </div>
         <div class="col-span-12 md:col-span-4">
             <Field v-slot="{ field, errors }" name="startTime" rules="required">
@@ -86,8 +83,14 @@ import { useToast } from 'primevue/usetoast'
 import { setupValidation } from '@/shared/utils/setup-validation'
 import { applyApiErrors } from '@/shared/utils/apply-api-errors'
 import InputTextCommon from '@/shared/components/form-common/InputTextCommon.vue'
-import RallyStageSelect from '@/modules/rally-stage/components/RallyStageSelect.vue'
-import TeamSelect from '@/modules/team/components/TeamSelect.vue'
+import {
+    combineDateTimeMs,
+    convertPenaltyToMilliseconds,
+    splitDateTimeMs,
+    splitPenalty,
+} from '@/modules/rally-stage/utils/rally-stage-flow'
+
+import RallyStageScheduleSelect from '@/modules/rally-stage-schedule/components/RallyStageScheduleSelect.vue'
 
 import PenaltyUnitSelect from '../commons/PenaltyUnitSelect.vue'
 import StatusSelect from '../commons/StatusSelect.vue'
@@ -106,106 +109,12 @@ const toast = useToast()
 
 setupValidation()
 
-const splitDateTimeMs = (value) => {
-    if (!value) {
-        return {
-            date: null,
-            milliseconds: '000',
-        }
-    }
-
-    const date = new Date(value)
-
-    if (Number.isNaN(date.getTime())) {
-        return {
-            date: null,
-            milliseconds: '000',
-        }
-    }
-
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0')
-    date.setMilliseconds(0)
-
-    return {
-        date,
-        milliseconds,
-    }
-}
-
-const combineDateTimeMs = (value, milliseconds) => {
-    if (!(value instanceof Date)) {
-        return null
-    }
-
-    const parsedMs = Number(String(milliseconds ?? '').padStart(3, '0'))
-    if (Number.isNaN(parsedMs) || parsedMs < 0 || parsedMs > 999) {
-        return null
-    }
-
-    const nextDate = new Date(value)
-    nextDate.setMilliseconds(parsedMs)
-    return nextDate
-}
-
-const splitPenalty = (value) => {
-    const numericValue = Number(value ?? 0)
-
-    if (Number.isNaN(numericValue) || numericValue < 0) {
-        return {
-            value: 0,
-            unit: 'ms',
-        }
-    }
-
-    if (numericValue !== 0 && numericValue % 60000 === 0) {
-        return {
-            value: numericValue / 60000,
-            unit: 'm',
-        }
-    }
-
-    if (numericValue !== 0 && numericValue % 1000 === 0) {
-        return {
-            value: numericValue / 1000,
-            unit: 's',
-        }
-    }
-
-    return {
-        value: numericValue,
-        unit: 'ms',
-    }
-}
-
-const convertPenaltyToMilliseconds = (value, unit) => {
-    const numericValue = Number(value)
-
-    if (Number.isNaN(numericValue) || numericValue < 0) {
-        return null
-    }
-
-    const factors = {
-        ms: 1,
-        s: 1000,
-        m: 60000,
-    }
-
-    const factor = factors[unit]
-
-    if (!factor) {
-        return null
-    }
-
-    return Math.round(numericValue * factor)
-}
-
 const startTimeParts = splitDateTimeMs(props.rallyStageResult?.startTime)
 const endTimeParts = splitDateTimeMs(props.rallyStageResult?.endTime)
 const penaltyParts = splitPenalty(props.rallyStageResult?.penalty)
 
 const rallyStageResultForm = ref({
-    stageId: props.rallyStageResult?.stageId,
-    teamId: props.rallyStageResult?.teamId,
+    scheduleId: props.rallyStageResult?.scheduleId,
     startTime: startTimeParts.date,
     endTime: endTimeParts.date,
     startTimeMs: startTimeParts.milliseconds,
@@ -232,8 +141,7 @@ const {
 })
 
 const serializeValues = (values) => ({
-    stageId: values.stageId,
-    teamId: values.teamId,
+    scheduleId: values.scheduleId,
     startTime: combineDateTimeMs(values.startTime, values.startTimeMs)?.toISOString() ?? values.startTime,
     endTime: combineDateTimeMs(values.endTime, values.endTimeMs)?.toISOString() ?? values.endTime,
     penalty: convertPenaltyToMilliseconds(values.penaltyValue, values.penaltyUnit),

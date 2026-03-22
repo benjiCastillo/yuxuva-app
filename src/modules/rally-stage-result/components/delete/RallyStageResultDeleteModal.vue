@@ -37,6 +37,8 @@ import ProgressSpinner from 'primevue/progressspinner'
 import Button from 'primevue/button'
 import { useToast } from 'primevue/usetoast'
 
+import { formatStageLabel, formatTeamLabel } from '@/modules/rally-stage/utils/rally-stage-flow'
+
 import { useGetRallyStageResult } from '../../composables/get-rally-stage-result.composable'
 import { useDeleteRallyStageResult } from '../../composables/delete-rally-stage-result.composable'
 
@@ -88,9 +90,9 @@ const {
 
 const resultLabel = computed(() => {
     return [
-        rallyStageResult.value?.stage?.stageOrder ? `ET ${rallyStageResult.value.stage.stageOrder}` : null,
-        rallyStageResult.value?.stage?.name,
-        rallyStageResult.value?.team?.competitionNo ? `#${rallyStageResult.value.team.competitionNo}` : null,
+        formatStageLabel(rallyStageResult.value?.schedule?.stage),
+        formatTeamLabel(rallyStageResult.value?.schedule?.team),
+        rallyStageResult.value?.schedule?.startOrder ? `Orden ${rallyStageResult.value.schedule.startOrder}` : null,
     ]
         .filter(Boolean)
         .join(' - ')

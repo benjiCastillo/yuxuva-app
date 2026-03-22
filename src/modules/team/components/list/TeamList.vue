@@ -6,7 +6,7 @@
         <DataTable
             :value="teams"
             :loading="loading"
-            tableStyle="min-width: 88rem"
+            tableStyle="min-width: 112rem"
             size="small"
             filterDisplay="row"
             showGridlines
@@ -47,9 +47,43 @@
                     {{ slotProps.data?.category?.name }}
                 </template>
             </Column>
-            <Column field="carId" header="Auto" :showFilterMenu="false" style="width: 18rem">
+            <Column field="carBrand" header="Marca" :showFilterMenu="false" style="width: 14rem">
+                <template #filter>
+                    <InputText
+                        v-model.trim="filters.carBrand"
+                        inputId="carBrand"
+                        maxlength="120"
+                        fluid
+                        @keyup.enter="applyFilters()" />
+                </template>
                 <template #body="slotProps">
-                    {{ formatCar(slotProps.data?.car) }}
+                    {{ slotProps.data?.carBrand || '-' }}
+                </template>
+            </Column>
+            <Column field="carModel" header="Modelo" :showFilterMenu="false" style="width: 14rem">
+                <template #filter>
+                    <InputText
+                        v-model.trim="filters.carModel"
+                        inputId="carModel"
+                        maxlength="120"
+                        fluid
+                        @keyup.enter="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    {{ slotProps.data?.carModel || '-' }}
+                </template>
+            </Column>
+            <Column field="carYear" header="Año" :showFilterMenu="false" style="width: 8rem">
+                <template #filter>
+                    <InputText
+                        v-model.trim="filters.carYear"
+                        inputId="carYear"
+                        maxlength="4"
+                        fluid
+                        @keyup.enter="applyFilters()" />
+                </template>
+                <template #body="slotProps">
+                    {{ slotProps.data?.carYear || '-' }}
                 </template>
             </Column>
             <Column field="driverId" header="Piloto" :showFilterMenu="false" style="width: 14rem">
@@ -164,6 +198,9 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
         competitionNo: '',
         championshipId: '',
         categoryId: '',
+        carBrand: '',
+        carModel: '',
+        carYear: '',
         driverId: '',
         status: '',
     },
@@ -172,10 +209,6 @@ const { filters, updateFilters, resetFilters } = useUrlFilters(
 
 const formatChampionship = (championship) => {
     return [championship?.name, championship?.season].filter(Boolean).join(' - ')
-}
-
-const formatCar = (car) => {
-    return [car?.brand, car?.model, car?.year].filter(Boolean).join(' ')
 }
 
 const formatDriver = (driver) => {

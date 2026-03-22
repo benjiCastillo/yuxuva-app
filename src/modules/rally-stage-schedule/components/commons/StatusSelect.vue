@@ -3,9 +3,9 @@
         <label :for="fieldName" :class="className">{{ title }}</label>
         <Select
             :modelValue="field.value"
-            :options="formattedCars"
-            optionLabel="label"
-            optionValue="id"
+            :options="statuses"
+            optionLabel="name"
+            optionValue="value"
             fluid
             filter
             @update:modelValue="field.onChange" />
@@ -14,13 +14,11 @@
         </small>
     </Field>
 </template>
+
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { Field } from 'vee-validate'
 import Select from 'primevue/select'
-import { useToast } from 'primevue/usetoast'
-
-import { useSelectDataCar } from '../composables/select-data-car.composable'
 
 const props = defineProps({
     fieldName: {
@@ -37,7 +35,13 @@ const props = defineProps({
     },
 })
 
-const toast = useToast()
+const statuses = ref([
+    { name: 'PROGRAMADO', value: 'SCHEDULED' },
+    { name: 'CONFIRMADO', value: 'CONFIRMED' },
+    { name: 'CANCELADO', value: 'CANCELLED' },
+    { name: 'EN CURSO', value: 'STARTED' },
+    { name: 'FINALIZADO', value: 'FINISHED' },
+])
 
 const isRequired = computed(() => {
     return props.rules.includes('required')
@@ -45,27 +49,5 @@ const isRequired = computed(() => {
 
 const className = computed(() => {
     return ['block truncate-1 font-bold mb-1', isRequired.value ? 'required' : '']
-})
-
-const { cars, selectData } = useSelectDataCar({
-    onError: (title, error) => {
-        toast.add({
-            severity: 'error',
-            summary: title,
-            detail: error.message,
-            life: 3000,
-        })
-    },
-})
-
-const formattedCars = computed(() => {
-    return cars.value.map((car) => ({
-        ...car,
-        label: [car.brand, car.model, car.year].filter(Boolean).join(' '),
-    }))
-})
-
-onMounted(() => {
-    selectData()
 })
 </script>
