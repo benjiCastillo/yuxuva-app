@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body{
+    font-size: 14px;
+}
+
 .required::after {
     content: ' *';
     color: var(--color-red-500);

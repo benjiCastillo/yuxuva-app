@@ -1,30 +1,26 @@
 <template>
     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
-            <div class="xl:col-span-2">
+        <div class="mb-4 grid gap-3 grid-cols-12">
+            <div class="col-span-3">
                 <label class="mb-1 block text-sm font-semibold text-slate-700">Etapa</label>
                 <RallyStageSelectFilter v-model.trim="filters.stageId" @update:modelValue="applyFilters()" />
             </div>
-            <div>
+            <div class="col-span-3">
                 <label class="mb-1 block text-sm font-semibold text-slate-700">Categoria</label>
                 <CategorySelectFilter v-model.trim="filters.categoryId" @update:modelValue="applyFilters()" />
             </div>
-            <div class="xl:col-span-2">
+            <div class="col-span-4">
                 <label class="mb-1 block text-sm font-semibold text-slate-700">Equipo</label>
                 <TeamSelectFilter
                     v-model.trim="filters.teamId"
                     :query="teamFilterQuery"
                     @update:modelValue="applyFilters()" />
             </div>
-            <div>
+            <div class="col-span-2">
                 <label class="mb-1 block text-sm font-semibold text-slate-700">Estado</label>
                 <StatusSelectFilter v-model.trim="filters.status" @update:modelValue="applyFilters()" />
             </div>
-            <div>
-                <label class="mb-1 block text-sm font-semibold text-slate-700">Orden</label>
-                <InputText v-model.trim="filters.startOrder" inputId="startOrder" fluid @keyup.enter="applyFilters()" />
-            </div>
-            <div class="flex items-end justify-end gap-2 xl:col-span-5">
+            <div class="flex items-end justify-end gap-2 col-span-12">
                 <Button
                     label="Limpiar"
                     icon="pi pi-filter-slash"
